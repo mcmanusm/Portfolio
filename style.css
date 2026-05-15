@@ -1,6 +1,6 @@
 /* ============================================
    AuctionsPlus Market Insights Hub
-   Style: Editorial / Data-dense / Warm
+   Brand Palette: Navy / Blue / Cool Grey
    ============================================ */
 
 /* --- RESET & BASE --- */
@@ -11,20 +11,32 @@
 }
 
 :root {
-    --cream: #fdf8f0;
-    --warm-white: #fefcf8;
-    --sand: #f5edd6;
-    --border: #e8dcc8;
-    --text: #1a1a1a;
-    --text-secondary: #6b6356;
-    --green: #2d6a4f;
-    --green-light: #d8f3dc;
-    --red: #c1121f;
-    --red-light: #fde8e8;
-    --accent-yellow: #f5e642;
+    /* Brand - Primary */
+    --navy: #002341;
+    --strong-blue: #1542A7;
+    --vivid-blue: #1971D8;
+
+    /* Brand - Secondary */
+    --cool-grey: #F7FAFC;
+    --sky-blue: #E3F2FE;
+
+    /* Functional */
+    --white: #FFFFFF;
+    --border: #DAE3ED;
+    --border-light: #EDF2F7;
+    --text: #002341;
+    --text-secondary: #5A6B7D;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+
+    /* Typography */
     --font-display: 'Playfair Display', Georgia, serif;
     --font-body: 'Source Sans 3', -apple-system, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
+
+    /* Layout */
     --max-width: 1280px;
     --radius: 8px;
 }
@@ -36,7 +48,7 @@ html {
 
 body {
     font-family: var(--font-body);
-    background: var(--cream);
+    background: var(--cool-grey);
     color: var(--text);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
@@ -49,11 +61,12 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0.8rem 2rem;
-    background: var(--warm-white);
-    border-bottom: 1px solid var(--border);
+    background: var(--navy);
+    color: var(--white);
     position: sticky;
     top: 0;
     z-index: 100;
+    box-shadow: 0 2px 8px rgba(0, 35, 65, 0.15);
 }
 
 .nav-left {
@@ -67,17 +80,17 @@ body {
     font-weight: 900;
     font-size: 1.35rem;
     font-style: italic;
-    color: var(--text);
+    color: var(--white);
 }
 
 .nav-separator {
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.4);
     font-size: 1.2rem;
 }
 
 .nav-subtitle {
     font-size: 0.95rem;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.7);
     font-weight: 400;
 }
 
@@ -92,18 +105,18 @@ body {
     align-items: center;
     gap: 0.35rem;
     padding: 0.4rem 0.85rem;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 6px;
-    background: var(--warm-white);
+    background: rgba(255, 255, 255, 0.08);
     font-family: var(--font-body);
     font-size: 0.85rem;
-    color: var(--text);
+    color: var(--white);
     cursor: pointer;
     transition: background 0.15s;
 }
 
 .nav-btn:hover {
-    background: var(--sand);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .btn-icon {
@@ -113,18 +126,18 @@ body {
 .sign-in-link {
     margin-left: 0.5rem;
     padding: 0.4rem 1rem;
-    border: 1px solid var(--text);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 6px;
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--text);
+    color: var(--white);
     text-decoration: none;
     transition: all 0.15s;
 }
 
 .sign-in-link:hover {
-    background: var(--text);
-    color: var(--warm-white);
+    background: var(--white);
+    color: var(--navy);
 }
 
 
@@ -134,7 +147,7 @@ body {
     align-items: center;
     gap: 1rem;
     padding: 0.75rem 2rem;
-    background: var(--sand);
+    background: var(--sky-blue);
     border-bottom: 1px solid var(--border);
 }
 
@@ -142,7 +155,8 @@ body {
     flex-shrink: 0;
     display: inline-block;
     padding: 0.25rem 0.75rem;
-    background: var(--accent-yellow);
+    background: var(--vivid-blue);
+    color: var(--white);
     border-radius: 4px;
     font-size: 0.8rem;
     font-weight: 700;
@@ -153,6 +167,7 @@ body {
     font-size: 1.15rem;
     font-weight: 700;
     line-height: 1.4;
+    color: var(--navy);
 }
 
 .banner-text strong {
@@ -180,6 +195,7 @@ body {
     font-weight: 900;
     font-style: italic;
     line-height: 1;
+    color: var(--navy);
 }
 
 .section-meta {
@@ -192,17 +208,18 @@ body {
 .see-all-link {
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--text);
+    color: var(--strong-blue);
     text-decoration: none;
     border: 1px solid var(--border);
     padding: 0.35rem 0.9rem;
     border-radius: 6px;
-    transition: background 0.15s;
+    transition: all 0.15s;
     white-space: nowrap;
 }
 
 .see-all-link:hover {
-    background: var(--sand);
+    background: var(--sky-blue);
+    border-color: var(--vivid-blue);
 }
 
 
@@ -214,18 +231,19 @@ body {
 }
 
 .indicator-card {
-    background: var(--warm-white);
+    background: var(--white);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 1rem 1.1rem;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s, border-color 0.2s;
 }
 
 .indicator-card:hover {
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 16px rgba(0, 35, 65, 0.08);
+    border-color: var(--vivid-blue);
 }
 
 .indicator-label {
@@ -241,6 +259,7 @@ body {
     font-size: 2.6rem;
     font-weight: 900;
     line-height: 1.1;
+    color: var(--navy);
 }
 
 .indicator-footer {
@@ -278,17 +297,18 @@ body {
 }
 
 .tool-card {
-    background: var(--warm-white);
+    background: var(--white);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 1.25rem 1.5rem;
     cursor: pointer;
-    transition: box-shadow 0.2s, transform 0.15s;
+    transition: box-shadow 0.2s, transform 0.15s, border-color 0.2s;
 }
 
 .tool-card:hover {
-    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
-    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(0, 35, 65, 0.1);
+    transform: translateY(-2px);
+    border-color: var(--vivid-blue);
 }
 
 .tool-card-header {
@@ -303,22 +323,25 @@ body {
     font-size: 1.3rem;
     font-weight: 900;
     font-style: italic;
+    color: var(--navy);
 }
 
 .open-btn {
     padding: 0.3rem 0.8rem;
-    border: 1px solid var(--border);
+    border: 1px solid var(--strong-blue);
     border-radius: 6px;
-    background: var(--warm-white);
+    background: var(--white);
     font-family: var(--font-body);
     font-size: 0.8rem;
     font-weight: 600;
+    color: var(--strong-blue);
     cursor: pointer;
-    transition: background 0.15s;
+    transition: all 0.15s;
 }
 
 .open-btn:hover {
-    background: var(--sand);
+    background: var(--strong-blue);
+    color: var(--white);
 }
 
 .tool-card-subtitle {
@@ -343,17 +366,21 @@ body {
     color: var(--text-secondary);
     text-transform: uppercase;
     padding: 0.4rem 0.5rem;
-    border-bottom: 1.5px solid var(--border);
+    border-bottom: 2px solid var(--navy);
 }
 
 .preview-table tbody td {
     padding: 0.55rem 0.5rem;
-    border-bottom: 1px solid #f0e9db;
+    border-bottom: 1px solid var(--border-light);
     vertical-align: middle;
 }
 
 .preview-table tbody tr:last-child td {
     border-bottom: none;
+}
+
+.preview-table tbody tr:hover {
+    background: var(--cool-grey);
 }
 
 .mono {
@@ -392,7 +419,7 @@ body {
 
 .rainfall-map-placeholder {
     position: relative;
-    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 40%, #a5d6a7 70%, #81c784 100%);
+    background: linear-gradient(135deg, var(--sky-blue) 0%, #c7e0f4 40%, #a3c9ed 70%, #7ab3e6 100%);
     border-radius: 6px;
     overflow: hidden;
     min-height: 150px;
@@ -404,7 +431,7 @@ body {
     height: 12px;
     border-radius: 50%;
     opacity: 0.7;
-    box-shadow: 0 0 6px rgba(0,0,0,0.15);
+    box-shadow: 0 0 6px rgba(0, 35, 65, 0.2);
 }
 
 .map-dot.pin {
@@ -421,7 +448,7 @@ body {
     left: 0.5rem;
     font-size: 0.7rem;
     color: var(--text-secondary);
-    background: rgba(255,255,255,0.8);
+    background: rgba(255, 255, 255, 0.85);
     padding: 0.15rem 0.4rem;
     border-radius: 3px;
 }
@@ -452,6 +479,7 @@ body {
     font-weight: 900;
     font-style: italic;
     line-height: 1.1;
+    color: var(--navy);
 }
 
 .stat-big sup {
@@ -468,18 +496,20 @@ body {
 .open-map-btn {
     align-self: flex-start;
     padding: 0.35rem 0.9rem;
-    border: 1px solid var(--border);
+    border: 1px solid var(--strong-blue);
     border-radius: 6px;
-    background: var(--warm-white);
+    background: var(--white);
     font-family: var(--font-body);
     font-size: 0.82rem;
     font-weight: 600;
+    color: var(--strong-blue);
     cursor: pointer;
-    transition: background 0.15s;
+    transition: all 0.15s;
 }
 
 .open-map-btn:hover {
-    background: var(--sand);
+    background: var(--strong-blue);
+    color: var(--white);
 }
 
 
@@ -520,11 +550,12 @@ body {
 
 .sold-table td:last-child {
     font-weight: 700;
+    color: var(--navy);
 }
 
 .sold-map-placeholder {
     position: relative;
-    background: linear-gradient(135deg, #fce4d6 0%, #f8d7be 50%, #f0c8a8 100%);
+    background: linear-gradient(135deg, var(--sky-blue) 0%, #d0e4f5 50%, #b8d4ee 100%);
     border-radius: 6px;
     overflow: hidden;
     min-height: 150px;
@@ -533,7 +564,7 @@ body {
 .flow-line {
     position: absolute;
     height: 2px;
-    background: linear-gradient(90deg, transparent, var(--red), transparent);
+    background: linear-gradient(90deg, transparent, var(--vivid-blue), transparent);
     opacity: 0.4;
     border-radius: 1px;
 }
@@ -547,6 +578,7 @@ body {
     border-top: 1px solid var(--border);
     font-size: 0.82rem;
     color: var(--text-secondary);
+    background: var(--white);
 }
 
 
