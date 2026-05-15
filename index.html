@@ -10,362 +10,278 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-/* ============================================
-   AuctionsPlus Market Insights Hub — Homepage
-   Brand: Navy #002341 / Blue #1542A7 / Vivid #1971D8
-   ============================================ */
 :root {
-  --navy: #002341;
-  --blue: #1542A7;
-  --blue-vivid: #1971D8;
-  --sky: #E3F2FE;
-  --cool: #F7FAFC;
-  --white: #FFFFFF;
-  --border: #E2E8F0;
-  --border-light: #EDF2F7;
-  --text: #0F172A;
-  --muted: #64748B;
-  --green: #16a34a;
-  --green-bg: #dcfce7;
-  --red: #dc2626;
-  --red-bg: #fee2e2;
-  --amber: #d97706;
-  --amber-bg: #fef3c7;
-  --r: 10px;
+  --navy:#002341; --blue:#1542A7; --blue-vivid:#1971D8; --teal:#0EA5E9;
+  --sky:#E3F2FE; --cool:#F7FAFC; --white:#FFFFFF;
+  --green:#16a34a; --green-bg:#dcfce7; --red:#dc2626; --red-bg:#fee2e2;
+  --amber:#d97706; --amber-bg:#fef3c7; --purple:#8B5CF6;
+  --border:#E2E8F0; --border-lt:#EDF2F7; --text:#0F172A; --muted:#64748B;
+  --r:10px;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'DM Sans', sans-serif; background: var(--cool); color: var(--text); font-size: 14px; line-height: 1.5; }
-.mono { font-family: 'DM Mono', monospace; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cool);color:var(--text);font-size:14px;line-height:1.5}
+.mono{font-family:'DM Mono',monospace}
 
 /* ── HEADER ── */
-.hdr {
-  background: var(--navy);
-  color: #fff;
-  padding: 0 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 58px;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 2px 12px rgba(0,35,65,.25);
-}
-.hdr-left { display: flex; align-items: center; gap: 12px; }
-.hdr-brand { font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
-.hdr-sep { color: rgba(255,255,255,.25); }
-.hdr-sub { font-size: 13px; color: rgba(255,255,255,.55); font-weight: 400; }
-.hdr-right { display: flex; align-items: center; gap: 8px; }
-.hdr-btn {
-  padding: 5px 14px;
-  border-radius: 6px;
-  border: 1px solid rgba(255,255,255,.18);
-  background: rgba(255,255,255,.06);
-  color: rgba(255,255,255,.8);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all .15s;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-.hdr-btn:hover { background: rgba(255,255,255,.14); color: #fff; }
-.hdr-signin {
-  padding: 5px 16px;
-  border-radius: 6px;
-  border: 1px solid rgba(255,255,255,.35);
-  background: transparent;
-  color: #fff;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all .15s;
-  margin-left: 4px;
-}
-.hdr-signin:hover { background: #fff; color: var(--navy); }
+.hdr{background:var(--navy);color:#fff;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:1000;box-shadow:0 2px 12px rgba(0,35,65,.25)}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-brand{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.hdr-sep{color:rgba(255,255,255,.25);font-size:14px}
+.hdr-sub{font-size:12px;color:rgba(255,255,255,.5);font-weight:400}
+.hdr-nav{display:flex;gap:3px}
+.nav-btn{padding:5px 13px;border-radius:6px;border:none;background:transparent;color:rgba(255,255,255,.55);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.nav-btn:hover{background:rgba(255,255,255,.09);color:#fff}
+.nav-btn.active{background:var(--blue);color:#fff}
+.hdr-right{display:flex;align-items:center;gap:6px}
+.hdr-btn{padding:4px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:rgba(255,255,255,.75);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:4px}
+.hdr-btn:hover{background:rgba(255,255,255,.14);color:#fff}
+.hdr-signin{padding:4px 14px;border-radius:6px;border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;margin-left:2px}
+.hdr-signin:hover{background:#fff;color:var(--navy)}
 
 /* ── WEEK BANNER ── */
-.week-banner {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 10px 32px;
-  background: var(--sky);
-  border-bottom: 1px solid var(--border);
-}
-.week-badge {
-  flex-shrink: 0;
-  padding: 4px 12px;
-  background: var(--blue-vivid);
-  color: #fff;
-  border-radius: 5px;
-  font-size: 11px;
-  font-weight: 700;
-}
-.week-text { font-size: 14px; font-weight: 600; color: var(--navy); }
-.week-text strong { font-weight: 800; }
+.week-banner{display:flex;align-items:center;gap:12px;padding:8px 28px;background:var(--sky);border-bottom:1px solid var(--border)}
+.week-badge{flex-shrink:0;padding:3px 10px;background:var(--blue-vivid);color:#fff;border-radius:5px;font-size:10px;font-weight:700}
+.week-text{font-size:13px;font-weight:600;color:var(--navy)}
+.week-text strong{font-weight:800}
 
-/* ── LAYOUT ── */
-.hub { max-width: 1360px; margin: 0 auto; padding: 20px 32px; }
-.section-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 14px;
-}
-.sh-title { font-size: 18px; font-weight: 800; letter-spacing: -.3px; }
-.sh-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.sh-right { display: flex; align-items: center; gap: 6px; }
+/* ── TABS / LAYOUT ── */
+.tab{display:none}.tab.active{display:block}
+.hub{max-width:1400px;margin:0 auto;padding:20px 28px}
 
-/* ── PILLS / TABS ── */
-.tab-row { display: flex; gap: 4px; }
-.tab-btn {
-  padding: 6px 16px;
-  border-radius: 6px;
-  border: 1.5px solid var(--border);
-  background: #fff;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--muted);
-  transition: all .12s;
-}
-.tab-btn:hover { border-color: var(--blue); color: var(--blue); }
-.tab-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+/* ── SECTION HEADS ── */
+.sh{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px}
+.sh-title{font-size:17px;font-weight:800;letter-spacing:-.3px}
+.sh-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.divider{height:1px;background:var(--border);margin:6px 0 18px}
 
-/* ── KPI CARDS ── */
-.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
-.kpi {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 16px 18px;
-  position: relative;
-  overflow: hidden;
-  transition: box-shadow .15s, border-color .15s;
-}
-.kpi:hover { box-shadow: 0 4px 20px rgba(0,35,65,.08); border-color: var(--blue-vivid); }
-.kpi-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--blue-vivid); border-radius: var(--r) var(--r) 0 0; }
-.kpi-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
-.kpi-value { font-size: 30px; font-weight: 800; letter-spacing: -1.2px; line-height: 1; }
-.kpi-delta {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 11px;
-  font-weight: 700;
-  margin-top: 8px;
-  padding: 3px 8px;
-  border-radius: 999px;
-}
-.kpi-delta.up { background: var(--green-bg); color: var(--green); }
-.kpi-delta.down { background: var(--red-bg); color: var(--red); }
-.kpi-delta.neutral { background: var(--border-light); color: var(--muted); }
-.kpi-spark { position: absolute; bottom: 10px; right: 14px; width: 80px; height: 28px; }
+/* ── PILLS / TOGGLES ── */
+.tab-row{display:flex;gap:3px}
+.tbtn{padding:5px 14px;border-radius:6px;border:1.5px solid var(--border);background:#fff;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);transition:all .12s}
+.tbtn:hover{border-color:var(--blue);color:var(--blue)}
+.tbtn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.pill{padding:4px 12px;border-radius:999px;border:1.5px solid var(--border);font-size:11px;font-weight:600;cursor:pointer;background:#fff;color:var(--muted);transition:all .12s}
+.pill:hover{border-color:var(--blue);color:var(--blue)}
+.pill.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;background:var(--sky);color:var(--blue);font-family:'DM Mono',monospace}
 
-/* ── DATE SELECTOR ── */
-.date-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 18px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-}
-.date-pill {
-  padding: 5px 14px;
-  border-radius: 999px;
-  border: 1.5px solid var(--border);
-  background: #fff;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  font-weight: 500;
-  cursor: pointer;
-  color: var(--muted);
-  transition: all .12s;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.date-pill:hover { border-color: var(--blue); color: var(--blue); }
-.date-pill.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+/* ── DATE ROW ── */
+.date-row{display:flex;align-items:center;gap:5px;margin-bottom:16px;overflow-x:auto;padding-bottom:2px}
+.date-pill{padding:4px 12px;border-radius:999px;border:1.5px solid var(--border);background:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;cursor:pointer;color:var(--muted);transition:all .12s;white-space:nowrap;flex-shrink:0}
+.date-pill:hover{border-color:var(--blue);color:var(--blue)}
+.date-pill.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* ── KPI ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden;transition:box-shadow .15s,border-color .15s}
+.kpi:hover{box-shadow:0 4px 20px rgba(0,35,65,.08);border-color:var(--blue-vivid)}
+.kpi-bar{position:absolute;top:0;left:0;right:0;height:3px;background:var(--blue-vivid);border-radius:var(--r) var(--r) 0 0}
+.kpi-lbl{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.kpi-val{font-size:28px;font-weight:800;letter-spacing:-1.2px;line-height:1}
+.delta{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;margin-top:7px;padding:2px 7px;border-radius:999px}
+.up{background:var(--green-bg);color:var(--green)}.down{background:var(--red-bg);color:var(--red)}.neutral{background:var(--border-lt);color:var(--muted)}
 
 /* ── CARDS ── */
-.card {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  overflow: hidden;
-  transition: box-shadow .15s, border-color .15s;
-}
-.card:hover { box-shadow: 0 4px 20px rgba(0,35,65,.07); border-color: var(--blue-vivid); }
-.card-hd {
-  padding: 12px 18px 10px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.card-title { font-size: 14px; font-weight: 700; }
-.card-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-.card-bd { padding: 14px 18px; }
-.open-btn {
-  padding: 4px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--blue);
-  background: #fff;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--blue);
-  cursor: pointer;
-  transition: all .12s;
-}
-.open-btn:hover { background: var(--blue); color: #fff; }
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:box-shadow .15s}
+.card:hover{box-shadow:0 4px 20px rgba(0,35,65,.06)}
+.card-hd{padding:11px 16px 9px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:700}
+.card-sub{font-size:10px;color:var(--muted);margin-top:1px}
+.card-bd{padding:14px 16px}
+.open-btn{padding:3px 10px;border-radius:5px;border:1px solid var(--blue);background:#fff;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;color:var(--blue);cursor:pointer;transition:all .12s}
+.open-btn:hover{background:var(--blue);color:#fff}
 
 /* ── GRIDS ── */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 20px; }
-.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
 
 /* ── TABLE ── */
-.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
-.tbl thead { background: var(--navy); color: #fff; }
-.tbl thead th { padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .3px; white-space: nowrap; }
-.tbl tbody tr { border-bottom: 1px solid var(--border-light); transition: background .1s; }
-.tbl tbody tr:hover { background: var(--cool); }
-.tbl td { padding: 8px 12px; }
-.num { font-family: 'DM Mono', monospace; font-size: 13px; }
-.pos { color: var(--green); font-weight: 700; font-family: 'DM Mono', monospace; }
-.neg { color: var(--red); font-weight: 700; font-family: 'DM Mono', monospace; }
-.flat { color: var(--muted); font-weight: 600; font-family: 'DM Mono', monospace; }
-.cat-s { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 600; background: #DBEAFE; color: #1D4ED8; }
-.cat-h { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 600; background: #FCE7F3; color: #BE185D; }
-.cat-b { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 600; background: #FEF3C7; color: #92400E; }
-
-/* ── SPARKLINE SVG ── */
-.spark { width: 80px; height: 28px; }
-.spark-sm { width: 48px; height: 18px; }
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl thead{background:var(--navy);color:#fff}
+.tbl thead th{padding:7px 10px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.3px;white-space:nowrap}
+.tbl tbody tr{border-bottom:1px solid var(--border-lt);transition:background .1s}
+.tbl tbody tr:hover{background:var(--cool)}
+.tbl td{padding:7px 10px}
+.num{font-family:'DM Mono',monospace;font-size:12px}
+.pos{color:var(--green);font-weight:700;font-family:'DM Mono',monospace;font-size:12px}
+.neg{color:var(--red);font-weight:700;font-family:'DM Mono',monospace;font-size:12px}
+.flat{color:var(--muted);font-weight:600;font-family:'DM Mono',monospace;font-size:12px}
+.cat-s{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;background:#DBEAFE;color:#1D4ED8}
+.cat-h{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;background:#FCE7F3;color:#BE185D}
+.cat-b{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;background:#FEF3C7;color:#92400E}
+.spark-sm{width:48px;height:16px;display:block}
 
 /* ── CHART ── */
-.ch { position: relative; height: 220px; }
+.ch{position:relative;height:220px}
+.ch-lg{position:relative;height:280px}
+.ch-xl{position:relative;height:340px}
+
+/* ── CALLOUT ── */
+.callout{background:linear-gradient(135deg,#EEF2FF,#E0E7FF);border:1px solid #C7D2FE;border-radius:var(--r);padding:12px 14px;margin-bottom:18px;display:flex;align-items:flex-start;gap:10px}
+.callout-icon{font-size:18px;flex-shrink:0}
+.callout-text{font-size:12px;line-height:1.6}
+.callout-text strong{color:var(--blue)}
+.warn{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
 
 /* ── MAP ── */
-#snm-map { height: 280px; border-radius: 0 0 var(--r) var(--r); }
+#map{height:520px;border-radius:0 0 var(--r) var(--r)}
+.map-wrap{position:relative}
+.map-side{position:absolute;left:12px;top:12px;width:240px;z-index:500;background:#fff;border-radius:var(--r);box-shadow:0 4px 24px rgba(0,0,0,.13);overflow:hidden}
+.ms-hd{background:var(--navy);color:#fff;padding:9px 12px;font-size:11px;font-weight:700}
+.ms-bd{padding:10px 12px}
+.fl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;margin-top:9px}
+.fl:first-child{margin-top:0}
+.mstat{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border)}
+.mstat:last-child{border:none}
+.msl{font-size:10px;color:var(--muted)}
+.msv{font-size:10px;font-weight:700;font-family:'DM Mono',monospace}
+input[type=range]{width:100%;accent-color:var(--blue)}
+.tbns{display:flex;gap:3px}
+.tbn{flex:1;padding:3px 0;text-align:center;border-radius:5px;border:1px solid var(--border);font-size:10px;font-weight:600;cursor:pointer;background:#fff;color:var(--muted);transition:all .12s}
+.tbn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.lgnd{display:flex;flex-direction:column;gap:3px}
+.li{display:flex;align-items:center;gap:6px;font-size:10px}
+.ld{width:9px;height:9px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.2);flex-shrink:0}
+.mvr{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-bottom:1px solid var(--border);background:#fff}
 
-/* ── RAINFALL MAP ── */
-#rain-map { height: 260px; border-radius: 0 0 var(--r) var(--r); }
-.rain-stat { text-align: center; padding: 10px; background: var(--cool); border-radius: 8px; }
-.rain-val { font-size: 22px; font-weight: 800; letter-spacing: -.5px; }
-.rain-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; margin-top: 2px; }
+/* ── LOT POPUP ── */
+.lpop{position:absolute;right:12px;top:12px;width:275px;z-index:600;background:#fff;border-radius:var(--r);box-shadow:0 8px 40px rgba(0,0,0,.18);overflow:hidden;display:none}
+.lpop.on{display:block}
+.lph{width:100%;height:130px;object-fit:cover;background:#E5E7EB}
+.lpp{width:100%;height:130px;background:linear-gradient(135deg,#E5E7EB,#D1D5DB);display:flex;align-items:center;justify-content:center;font-size:32px}
+.lb{padding:11px 13px}
+.lpr{font-size:20px;font-weight:800;letter-spacing:-.5px}
+.lckg{font-size:12px;color:var(--blue);font-weight:600}
+.lcat{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
+.lloc{font-size:11px;color:var(--muted);margin-top:3px}
+.lstats{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:9px}
+.lsv{font-size:14px;font-weight:800;text-align:center}
+.lsl{font-size:9px;color:var(--muted);text-transform:uppercase;text-align:center}
+.lmeta{margin-top:9px;padding-top:9px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.lml label{font-size:9px;color:var(--muted);text-transform:uppercase;display:block}
+.lml span{font-size:11px;font-weight:600}
+.lclose{position:absolute;top:7px;right:7px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center}
+
+/* ── INDICATOR CARDS (Price Indicators tab) ── */
+.ind-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.ind-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:18px;position:relative;overflow:hidden}
+.ind-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.ind-card.wnr-steer::before{background:var(--blue)}
+.ind-card.wnr-hfr::before{background:#BE185D}
+.ind-card.fdr-steer::before{background:var(--amber)}
+.ind-lbl{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.ind-val{font-size:34px;font-weight:900;letter-spacing:-1.5px;line-height:1}
+.ind-sub{font-size:11px;color:var(--muted);margin-top:3px}
+.prem-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.prem-stat{text-align:center;padding:10px;background:var(--cool);border-radius:7px}
+.ps-val{font-size:16px;font-weight:900;letter-spacing:-.3px}
+.ps-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
+
+/* ── REGION STATE CARDS ── */
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.sc{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.sc:hover{box-shadow:0 4px 20px rgba(0,0,0,.08);border-color:var(--blue)}
+.sc-bar{position:absolute;top:0;left:0;right:0;height:4px;border-radius:var(--r) var(--r) 0 0}
+.sc-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.sc-name{font-size:14px;font-weight:800}
+.sc-lots{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
+.sc-mets{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.scm{text-align:center;padding:6px;background:var(--cool);border-radius:6px}
+.scmv{font-size:14px;font-weight:800;font-family:'DM Mono',monospace}
+.scml{font-size:9px;color:var(--muted);text-transform:uppercase}
+.sc-stripe{height:3px;border-radius:2px;margin-top:10px}
+
+/* ── RAIN MAP (homepage) ── */
+#rain-map{height:220px;border-radius:8px}
+.rain-stat{text-align:center;padding:8px;background:var(--cool);border-radius:7px}
+.rain-val{font-size:18px;font-weight:800;letter-spacing:-.5px}
+.rain-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;margin-top:1px}
+
+/* ── SOLD NEAR ME (homepage preview) ── */
+#snm-map{height:220px;border-radius:8px}
 
 /* ── LOT TILES ── */
-.lot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-.lot-tile {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  overflow: hidden;
-  cursor: pointer;
-  transition: all .15s;
-}
-.lot-tile:hover { box-shadow: 0 4px 20px rgba(0,35,65,.1); border-color: var(--blue-vivid); transform: translateY(-1px); }
-.lot-img {
-  width: 100%;
-  height: 130px;
-  object-fit: cover;
-  background: linear-gradient(135deg, #E2E8F0, #CBD5E1);
-  display: block;
-}
-.lot-body { padding: 10px 12px; }
-.lot-title { font-size: 12px; font-weight: 700; line-height: 1.3; margin-bottom: 4px; }
-.lot-loc { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
-.lot-price { font-size: 18px; font-weight: 800; letter-spacing: -.5px; }
-.lot-ckg { font-size: 11px; color: var(--blue); font-weight: 600; }
-.lot-meta { display: flex; gap: 8px; margin-top: 6px; font-size: 10px; color: var(--muted); }
-.lot-meta span { display: flex; align-items: center; gap: 3px; }
-.lot-assess { display: block; margin-top: 6px; font-size: 11px; font-weight: 600; color: var(--blue); text-decoration: none; }
-.lot-assess:hover { text-decoration: underline; }
+.lot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.lot-tile{background:#fff;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .15s}
+.lot-tile:hover{box-shadow:0 4px 20px rgba(0,35,65,.1);border-color:var(--blue-vivid);transform:translateY(-1px)}
+.lot-img{width:100%;height:120px;object-fit:cover;background:linear-gradient(135deg,#E2E8F0,#CBD5E1);display:block}
+.lot-body{padding:9px 11px}
+.lot-title{font-size:11px;font-weight:700;line-height:1.3;margin-bottom:3px}
+.lot-loc{font-size:10px;color:var(--muted);margin-bottom:5px}
+.lot-price{font-size:17px;font-weight:800;letter-spacing:-.5px}
+.lot-ckg{font-size:10px;color:var(--blue);font-weight:600}
+.lot-meta{display:flex;gap:7px;margin-top:5px;font-size:9px;color:var(--muted)}
+.lot-meta span{display:flex;align-items:center;gap:2px}
+.lot-assess{display:block;margin-top:5px;font-size:10px;font-weight:600;color:var(--blue);text-decoration:none}
+.lot-assess:hover{text-decoration:underline}
+
+/* ── CLEARANCE BAR ── */
+.cb-wrap{display:flex;align-items:center;gap:6px}
+.cb-bg{flex:1;height:5px;background:var(--border);border-radius:3px}
+.cb-fill{height:100%;border-radius:3px}
+.cb-val{font-size:11px;font-weight:700;font-family:'DM Mono',monospace;width:34px;text-align:right}
 
 /* ── FOOTER ── */
-.footer { text-align: center; padding: 20px 32px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); background: #fff; margin-top: 10px; }
-
-/* ── DIVIDER ── */
-.divider { height: 1px; background: var(--border); margin: 8px 0 20px; }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 1024px) {
-  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-  .lot-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 768px) {
-  .hdr { flex-direction: column; height: auto; padding: 10px 16px; gap: 8px; }
-  .hub { padding: 16px; }
-  .kpi-grid { grid-template-columns: 1fr 1fr; }
-  .grid-2 { grid-template-columns: 1fr; }
-  .grid-3 { grid-template-columns: 1fr; }
-  .lot-grid { grid-template-columns: 1fr; }
-  .date-row { gap: 4px; }
-}
+.footer{text-align:center;padding:18px 28px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);background:#fff;margin-top:8px}
 
 /* ── ANIMATIONS ── */
-.fi { animation: fu .35s ease both; }
-@keyframes fu { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.fi{animation:fu .3s ease both}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){.kpi-grid,.g4{grid-template-columns:repeat(2,1fr)}.lot-grid{grid-template-columns:1fr 1fr}.ind-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.hdr{flex-direction:column;height:auto;padding:8px 14px;gap:6px}.hub{padding:14px}.g2,.rg{grid-template-columns:1fr}.lot-grid{grid-template-columns:1fr}.hdr-nav{flex-wrap:wrap;justify-content:center}}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════ -->
-<!-- HEADER                                 -->
-<!-- ═══════════════════════════════════════ -->
+<!-- ═══════════════ HEADER ═══════════════ -->
 <header class="hdr">
   <div class="hdr-left">
     <div class="hdr-brand">AuctionsPlus</div>
     <span class="hdr-sep">·</span>
     <span class="hdr-sub">Market Insights Hub</span>
   </div>
+  <nav class="hdr-nav">
+    <button class="nav-btn active" onclick="go('overview',this)">📊 Market Overview</button>
+    <button class="nav-btn" onclick="go('sold',this)">🗺️ Sold Near Me</button>
+    <button class="nav-btn" onclick="go('breed',this)">🐮 Breed Insights</button>
+    <button class="nav-btn" onclick="go('indicators',this)">📈 Price Indicators</button>
+    <button class="nav-btn" onclick="go('regional',this)">🌏 Regional</button>
+    <button class="nav-btn" onclick="go('trends',this)">📉 Trends</button>
+  </nav>
   <div class="hdr-right">
     <button class="hdr-btn">📍 Bathurst NSW 2795 ▾</button>
-    <button class="hdr-btn">📅 Fri 15 May 2026</button>
+    <button class="hdr-btn">📅 15 May 2026</button>
     <button class="hdr-signin">Sign in</button>
   </div>
 </header>
 
-<!-- ═══════════════════════════════════════ -->
-<!-- THIS WEEK IN 1 LINE                    -->
-<!-- ═══════════════════════════════════════ -->
+<!-- ═══════════════ WEEK BANNER ═══════════════ -->
 <div class="week-banner">
   <span class="week-badge">📰 This week in 1 line</span>
   <span class="week-text">Steers <strong>strong across the eastern seaboard</strong> — heavy cattle up sharply, rain easing the dry streak in central NSW.</span>
 </div>
 
+<!-- ════════════════════════════════════════════ -->
+<!-- TAB 1: MARKET OVERVIEW                      -->
+<!-- ════════════════════════════════════════════ -->
+<div id="tab-overview" class="tab active">
 <div class="hub">
 
-<!-- ═══════════════════════════════════════ -->
-<!-- INDICATORS                             -->
-<!-- ═══════════════════════════════════════ -->
-<section class="fi">
-  <div class="section-head">
-    <div>
-      <div class="sh-title">Indicators</div>
-      <div class="sh-sub">Live — updated every Friday close</div>
-    </div>
-    <div class="sh-right">
-      <div class="tab-row" id="ind-tabs">
-        <button class="tab-btn active" onclick="switchInd('cattle',this)">🐄 Cattle</button>
-        <button class="tab-btn" onclick="switchInd('sheep',this)">🐑 Sheep</button>
-        <button class="tab-btn" onclick="switchInd('region',this)">📍 My Region</button>
-        <button class="tab-btn" onclick="switchInd('other',this)">🌧️ Other</button>
-      </div>
+  <!-- INDICATOR TABS -->
+  <div class="sh fi">
+    <div><div class="sh-title">Indicators</div><div class="sh-sub">Live — updated every Friday close</div></div>
+    <div class="tab-row" id="ind-tabs">
+      <button class="tbtn active" onclick="switchInd('cattle',this)">🐄 Cattle</button>
+      <button class="tbtn" onclick="switchInd('sheep',this)">🐑 Sheep</button>
+      <button class="tbtn" onclick="switchInd('region',this)">📍 My Region</button>
+      <button class="tbtn" onclick="switchInd('other',this)">🌧️ Other</button>
     </div>
   </div>
 
-  <!-- Date selector -->
   <div class="date-row">
-    <span style="font-size:11px;color:var(--muted);margin-right:4px;">◀</span>
+    <span style="font-size:10px;color:var(--muted)">◀</span>
     <button class="date-pill active">15 May 2026</button>
     <button class="date-pill">8 May 2026</button>
     <button class="date-pill">1 May 2026</button>
@@ -373,273 +289,167 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cool); color: var(-
     <button class="date-pill">17 Apr 2026</button>
     <button class="date-pill">10 Apr 2026</button>
     <button class="date-pill">3 Apr 2026</button>
-    <button class="date-pill">27 Mar 2026</button>
-    <span style="font-size:11px;color:var(--muted);margin-left:4px;">▶</span>
+    <span style="font-size:10px;color:var(--muted)">▶</span>
   </div>
 
-  <!-- CATTLE INDICATORS -->
   <div id="ind-cattle" class="ind-panel">
     <div class="kpi-grid">
-      <div class="kpi">
-        <div class="kpi-bar"></div>
-        <div class="kpi-label">Commercial Cattle Offerings</div>
-        <div class="kpi-value">12,422</div>
-        <span class="kpi-delta down">▼ 17%</span>
-        <svg class="kpi-spark spark" viewBox="0 0 80 28"><polyline points="0,5 12,8 24,10 36,6 48,12 60,18 72,22 80,20" fill="none" stroke="var(--red)" stroke-width="2" opacity=".5"/></svg>
-      </div>
-      <div class="kpi">
-        <div class="kpi-bar"></div>
-        <div class="kpi-label">Amount Over Reserve (VOR)</div>
-        <div class="kpi-value">$136</div>
-        <span class="kpi-delta up">▲ $15</span>
-        <svg class="kpi-spark spark" viewBox="0 0 80 28"><polyline points="0,22 12,20 24,18 36,15 48,12 60,10 72,8 80,6" fill="none" stroke="var(--green)" stroke-width="2" opacity=".5"/></svg>
-      </div>
-      <div class="kpi">
-        <div class="kpi-bar"></div>
-        <div class="kpi-label">Clearance Rate (%)</div>
-        <div class="kpi-value">83%</div>
-        <span class="kpi-delta down">▼ 7pp</span>
-        <svg class="kpi-spark spark" viewBox="0 0 80 28"><polyline points="0,6 12,8 24,7 36,10 48,14 60,18 72,16 80,20" fill="none" stroke="var(--red)" stroke-width="2" opacity=".5"/></svg>
-      </div>
-      <div class="kpi">
-        <div class="kpi-bar"></div>
-        <div class="kpi-label">AYCI c/kg LW</div>
-        <div class="kpi-value">494</div>
-        <span class="kpi-delta up">▲ 11c</span>
-        <svg class="kpi-spark spark" viewBox="0 0 80 28"><polyline points="0,24 12,22 24,19 36,16 48,13 60,10 72,7 80,5" fill="none" stroke="var(--green)" stroke-width="2" opacity=".5"/></svg>
-      </div>
+      <div class="kpi"><div class="kpi-bar"></div><div class="kpi-lbl">Commercial Cattle Offerings</div><div class="kpi-val">12,422</div><span class="delta down">▼ 17%</span></div>
+      <div class="kpi"><div class="kpi-bar"></div><div class="kpi-lbl">Amount Over Reserve (VOR)</div><div class="kpi-val">$136</div><span class="delta up">▲ $15</span></div>
+      <div class="kpi"><div class="kpi-bar"></div><div class="kpi-lbl">Clearance Rate (%)</div><div class="kpi-val">83%</div><span class="delta down">▼ 7pp</span></div>
+      <div class="kpi"><div class="kpi-bar"></div><div class="kpi-lbl">AYCI c/kg LW</div><div class="kpi-val">494</div><span class="delta up">▲ 11c</span></div>
     </div>
   </div>
-
-  <!-- SHEEP INDICATORS -->
   <div id="ind-sheep" class="ind-panel" style="display:none">
     <div class="kpi-grid">
-      <div class="kpi">
-        <div class="kpi-bar" style="background:#10b981"></div>
-        <div class="kpi-label">Sheep & Lamb Offerings</div>
-        <div class="kpi-value">8,914</div>
-        <span class="kpi-delta up">▲ 12%</span>
-      </div>
-      <div class="kpi">
-        <div class="kpi-bar" style="background:#10b981"></div>
-        <div class="kpi-label">National Lamb Indicator</div>
-        <div class="kpi-value">812</div>
-        <span class="kpi-delta down">▼ 7pp</span>
-      </div>
-      <div class="kpi">
-        <div class="kpi-bar" style="background:#10b981"></div>
-        <div class="kpi-label">Mutton Avg c/kg</div>
-        <div class="kpi-value">420c</div>
-        <span class="kpi-delta neutral">— flat</span>
-      </div>
-      <div class="kpi">
-        <div class="kpi-bar" style="background:#10b981"></div>
-        <div class="kpi-label">Lamb Clearance Rate</div>
-        <div class="kpi-value">79%</div>
-        <span class="kpi-delta down">▼ 3pp</span>
-      </div>
+      <div class="kpi"><div class="kpi-bar" style="background:#10b981"></div><div class="kpi-lbl">Sheep & Lamb Offerings</div><div class="kpi-val">8,914</div><span class="delta up">▲ 12%</span></div>
+      <div class="kpi"><div class="kpi-bar" style="background:#10b981"></div><div class="kpi-lbl">National Lamb Indicator</div><div class="kpi-val">812</div><span class="delta down">▼ 7pp</span></div>
+      <div class="kpi"><div class="kpi-bar" style="background:#10b981"></div><div class="kpi-lbl">Mutton Avg c/kg</div><div class="kpi-val">420c</div><span class="delta neutral">— flat</span></div>
+      <div class="kpi"><div class="kpi-bar" style="background:#10b981"></div><div class="kpi-lbl">Lamb Clearance Rate</div><div class="kpi-val">79%</div><span class="delta down">▼ 3pp</span></div>
     </div>
   </div>
-
-  <!-- MY REGION INDICATORS -->
   <div id="ind-region" class="ind-panel" style="display:none">
     <div class="kpi-grid">
-      <div class="kpi">
-        <div class="kpi-bar" style="background:var(--amber)"></div>
-        <div class="kpi-label">Lots within 50km · Bathurst</div>
-        <div class="kpi-value">87</div>
-        <span class="kpi-delta up">▲ 14%</span>
-      </div>
-      <div class="kpi">
-        <div class="kpi-bar" style="background:var(--amber)"></div>
-        <div class="kpi-label">Avg $/head · Bathurst 50km</div>
-        <div class="kpi-value">$1,942</div>
-        <span class="kpi-delta up">▲ $86</span>
-      </div>
-      <div class="kpi">
-        <div class="kpi-bar" style="background:var(--amber)"></div>
-        <div class="kpi-label">Avg c/kg LW · Bathurst 50km</div>
-        <div class="kpi-value">512c</div>
-        <span class="kpi-delta up">▲ 18c</span>
-      </div>
-      <div class="kpi">
-        <div class="kpi-bar" style="background:var(--amber)"></div>
-        <div class="kpi-label">Local Clearance Rate</div>
-        <div class="kpi-value">86%</div>
-        <span class="kpi-delta up">▲ 4pp</span>
-      </div>
+      <div class="kpi"><div class="kpi-bar" style="background:var(--amber)"></div><div class="kpi-lbl">Lots within 50km · Bathurst</div><div class="kpi-val">87</div><span class="delta up">▲ 14%</span></div>
+      <div class="kpi"><div class="kpi-bar" style="background:var(--amber)"></div><div class="kpi-lbl">Avg $/head · Bathurst 50km</div><div class="kpi-val">$1,942</div><span class="delta up">▲ $86</span></div>
+      <div class="kpi"><div class="kpi-bar" style="background:var(--amber)"></div><div class="kpi-lbl">Avg c/kg LW · Bathurst 50km</div><div class="kpi-val">512c</div><span class="delta up">▲ 18c</span></div>
+      <div class="kpi"><div class="kpi-bar" style="background:var(--amber)"></div><div class="kpi-lbl">Local Clearance Rate</div><div class="kpi-val">86%</div><span class="delta up">▲ 4pp</span></div>
     </div>
   </div>
-
-  <!-- OTHER INDICATORS (Rainfall etc) -->
   <div id="ind-other" class="ind-panel" style="display:none">
     <div class="kpi-grid">
-      <div class="kpi">
-        <div class="kpi-bar" style="background:#0ea5e9"></div>
-        <div class="kpi-label">Rainfall FYTD · Bathurst</div>
-        <div class="kpi-value">412mm</div>
-        <span class="kpi-delta up">▲ 8% vs avg</span>
-      </div>
-      <div class="kpi">
-        <div class="kpi-bar" style="background:#0ea5e9"></div>
-        <div class="kpi-label">Rainfall CYTD · Bathurst</div>
-        <div class="kpi-value">238mm</div>
-        <span class="kpi-delta up">▲ 12mm</span>
-      </div>
-      <div class="kpi">
-        <div class="kpi-bar" style="background:#0ea5e9"></div>
-        <div class="kpi-label">Previous Year to Date</div>
-        <div class="kpi-value">226mm</div>
-        <span class="kpi-delta neutral">baseline</span>
-      </div>
-      <div class="kpi">
-        <div class="kpi-bar" style="background:#0ea5e9"></div>
-        <div class="kpi-label">YTD Decile · Bathurst</div>
-        <div class="kpi-value">7.2</div>
-        <span class="kpi-delta up">▲ above avg</span>
-      </div>
+      <div class="kpi"><div class="kpi-bar" style="background:#0ea5e9"></div><div class="kpi-lbl">Rainfall FYTD · Bathurst</div><div class="kpi-val">412mm</div><span class="delta up">▲ 8% vs avg</span></div>
+      <div class="kpi"><div class="kpi-bar" style="background:#0ea5e9"></div><div class="kpi-lbl">Rainfall CYTD · Bathurst</div><div class="kpi-val">238mm</div><span class="delta up">▲ 12mm</span></div>
+      <div class="kpi"><div class="kpi-bar" style="background:#0ea5e9"></div><div class="kpi-lbl">Previous Year to Date</div><div class="kpi-val">226mm</div><span class="delta neutral">baseline</span></div>
+      <div class="kpi"><div class="kpi-bar" style="background:#0ea5e9"></div><div class="kpi-lbl">YTD Decile · Bathurst</div><div class="kpi-val">7.2</div><span class="delta up">▲ above avg</span></div>
     </div>
   </div>
-</section>
 
-<div class="divider"></div>
+  <div class="divider"></div>
 
-<!-- ═══════════════════════════════════════ -->
-<!-- TOOLS                                  -->
-<!-- ═══════════════════════════════════════ -->
-<section class="fi" style="animation-delay:.05s">
-  <div class="section-head">
-    <div>
-      <div class="sh-title">Tools</div>
-      <div class="sh-sub">Click a card to drill in. Tiles show live previews.</div>
-    </div>
-    <button class="open-btn" style="padding:5px 14px;font-size:12px;">See all tools →</button>
-  </div>
+  <!-- ── TOOLS ── -->
+  <div class="sh fi"><div><div class="sh-title">Tools</div><div class="sh-sub">Click a card to drill in. Tiles show live previews.</div></div><button class="open-btn" style="padding:4px 12px;font-size:11px">See all tools →</button></div>
 
-  <div class="grid-2">
-    <!-- CATTLE COMMENTS -->
+  <div class="g2">
+    <!-- CATTLE COMMENTS with full columns -->
     <div class="card" style="cursor:pointer">
       <div class="card-hd">
-        <div>
-          <div class="card-title">Cattle Comments</div>
-          <div class="card-sub">Weekly market commentary</div>
+        <div><div class="card-title">National Weekly Table — Cattle</div><div class="card-sub">Week ending 15 May 2026</div></div>
+        <div style="display:flex;gap:3px">
+          <button class="tbtn active" style="padding:3px 10px;font-size:10px" onclick="switchCattle('steers',this)">Steers</button>
+          <button class="tbtn" style="padding:3px 10px;font-size:10px" onclick="switchCattle('heifers',this)">Heifers</button>
+          <button class="tbtn" style="padding:3px 10px;font-size:10px" onclick="switchCattle('breeding',this)">Breeding</button>
         </div>
-        <button class="open-btn">Open →</button>
       </div>
-      <div class="card-bd" style="padding-bottom:6px">
-        <div class="tab-row" style="margin-bottom:10px">
-          <button class="tab-btn active" style="padding:4px 10px;font-size:11px" onclick="switchCattle('steers',this)">Steers</button>
-          <button class="tab-btn" style="padding:4px 10px;font-size:11px" onclick="switchCattle('heifers',this)">Heifers</button>
-          <button class="tab-btn" style="padding:4px 10px;font-size:11px" onclick="switchCattle('breeding',this)">Breeding</button>
-        </div>
-        <div id="cattle-steers">
-          <table class="tbl">
-            <thead><tr><th>Category</th><th>Avg c/kg</th><th>Range</th><th>Δ</th><th></th></tr></thead>
-            <tbody>
-              <tr><td>Steers 0–200kg</td><td class="num">564c</td><td class="num">440–635</td><td class="pos">+38c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,16 8,13 16,11 24,9 32,6 40,4 48,2" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
-              <tr><td>Steers 200–280kg</td><td class="num">550c</td><td class="num">447–628</td><td class="pos">+28c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,15 8,13 16,11 24,9 32,7 40,5 48,3" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
-              <tr><td>Steers 280–330kg</td><td class="num">528c</td><td class="num">387–577</td><td class="pos">+21c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,14 8,12 16,11 24,10 32,8 40,6 48,5" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
-              <tr><td>Steers 330–400kg</td><td class="num">530c</td><td class="num">468–567</td><td class="pos">+45c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,16 8,14 16,11 24,8 32,5 40,3 48,1" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div id="cattle-heifers" style="display:none">
-          <table class="tbl">
-            <thead><tr><th>Category</th><th>Avg c/kg</th><th>Range</th><th>Δ</th><th></th></tr></thead>
-            <tbody>
-              <tr><td>Heifers 0–200kg</td><td class="num">498c</td><td class="num">380–580</td><td class="pos">+22c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,14 8,12 16,10 24,9 32,7 40,5 48,4" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
-              <tr><td>Heifers 200–280kg</td><td class="num">472c</td><td class="num">365–545</td><td class="pos">+15c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,13 8,12 16,10 24,9 32,8 40,6 48,5" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
-              <tr><td>Heifers 280–330kg</td><td class="num">458c</td><td class="num">340–520</td><td class="neg">-8c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,8 8,9 16,10 24,11 32,12 40,13 48,14" fill="none" stroke="var(--red)" stroke-width="1.5"/></svg></td></tr>
-              <tr><td>Heifers 330–400kg</td><td class="num">445c</td><td class="num">320–510</td><td class="pos">+12c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,14 8,12 16,11 24,10 32,8 40,7 48,6" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div id="cattle-breeding" style="display:none">
-          <table class="tbl">
-            <thead><tr><th>Category</th><th>Avg $/hd</th><th>Range</th><th>Δ</th><th></th></tr></thead>
-            <tbody>
-              <tr><td>PTIC Heifers</td><td class="num">$2,340</td><td class="num">$1,800–2,900</td><td class="pos">+$120</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,14 8,12 16,10 24,8 32,6 40,5 48,4" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
-              <tr><td>Cows & Calves</td><td class="num">$2,850</td><td class="num">$2,100–3,600</td><td class="pos">+$200</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,15 8,13 16,10 24,8 32,5 40,3 48,2" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
-              <tr><td>Joined Cows</td><td class="num">$1,980</td><td class="num">$1,400–2,500</td><td class="neg">-$65</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,7 8,8 16,10 24,11 32,12 40,13 48,14" fill="none" stroke="var(--red)" stroke-width="1.5"/></svg></td></tr>
-              <tr><td>Station Mated</td><td class="num">$1,740</td><td class="num">$1,200–2,200</td><td class="flat">$0</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,9 8,9 16,10 24,9 32,9 40,10 48,9" fill="none" stroke="var(--muted)" stroke-width="1.5"/></svg></td></tr>
-            </tbody>
-          </table>
-        </div>
+      <div id="cattle-steers">
+        <table class="tbl"><thead><tr><th>Category</th><th>Offered</th><th>Clr%</th><th>Avg c/kg</th><th>Range</th><th>Change</th><th>Avg $/hd</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Steers 0–200kg</strong></td><td class="num">303</td><td class="num">95%</td><td class="num">582c</td><td class="num">496–790c</td><td class="neg">-38c</td><td class="num">$1,087</td></tr>
+          <tr><td><strong>Steers 200–280kg</strong></td><td class="num">2,408</td><td class="num">99%</td><td class="num">564c</td><td class="num">386–639c</td><td class="neg">-3c</td><td class="num">$1,388</td></tr>
+          <tr><td><strong>Steers 280–330kg</strong></td><td class="num">1,318</td><td class="num">74%</td><td class="num">548c</td><td class="num">407–595c</td><td class="pos">+6c</td><td class="num">$1,643</td></tr>
+          <tr><td><strong>Steers 330–400kg</strong></td><td class="num">966</td><td class="num">72%</td><td class="num">537c</td><td class="num">377–574c</td><td class="pos">+8c</td><td class="num">$1,896</td></tr>
+          <tr><td><strong>Steers 400kg+</strong></td><td class="num">834</td><td class="num">91%</td><td class="num">526c</td><td class="num">388–543c</td><td class="pos">+18c</td><td class="num">$2,218</td></tr>
+        </tbody></table>
+      </div>
+      <div id="cattle-heifers" style="display:none">
+        <table class="tbl"><thead><tr><th>Category</th><th>Offered</th><th>Clr%</th><th>Avg c/kg</th><th>Range</th><th>Change</th><th>Avg $/hd</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Heifers 0–200kg</strong></td><td class="num">198</td><td class="num">92%</td><td class="num">498c</td><td class="num">380–580c</td><td class="pos">+22c</td><td class="num">$892</td></tr>
+          <tr><td><strong>Heifers 200–280kg</strong></td><td class="num">1,620</td><td class="num">95%</td><td class="num">472c</td><td class="num">365–545c</td><td class="pos">+15c</td><td class="num">$1,128</td></tr>
+          <tr><td><strong>Heifers 280–330kg</strong></td><td class="num">1,040</td><td class="num">82%</td><td class="num">458c</td><td class="num">340–520c</td><td class="neg">-8c</td><td class="num">$1,374</td></tr>
+          <tr><td><strong>Heifers 330–400kg</strong></td><td class="num">890</td><td class="num">78%</td><td class="num">445c</td><td class="num">320–510c</td><td class="pos">+12c</td><td class="num">$1,580</td></tr>
+          <tr><td><strong>Heifers 400kg+</strong></td><td class="num">548</td><td class="num">88%</td><td class="num">440c</td><td class="num">310–498c</td><td class="pos">+5c</td><td class="num">$1,848</td></tr>
+        </tbody></table>
+      </div>
+      <div id="cattle-breeding" style="display:none">
+        <table class="tbl"><thead><tr><th>Category</th><th>Offered</th><th>Clr%</th><th>Avg $/hd</th><th>Range</th><th>Change</th></tr></thead>
+        <tbody>
+          <tr><td><strong>PTIC Heifers</strong></td><td class="num">1,240</td><td class="num">62%</td><td class="num">$2,340</td><td class="num">$1,800–2,900</td><td class="pos">+$120</td></tr>
+          <tr><td><strong>Cows & Calves</strong></td><td class="num">1,890</td><td class="num">38%</td><td class="num">$2,850</td><td class="num">$2,100–3,600</td><td class="pos">+$200</td></tr>
+          <tr><td><strong>Joined Cows</strong></td><td class="num">1,120</td><td class="num">45%</td><td class="num">$1,980</td><td class="num">$1,400–2,500</td><td class="neg">-$65</td></tr>
+          <tr><td><strong>Station Mated</strong></td><td class="num">688</td><td class="num">41%</td><td class="num">$1,740</td><td class="num">$1,200–2,200</td><td class="flat">$0</td></tr>
+        </tbody></table>
       </div>
     </div>
 
-    <!-- SHEEP & LAMB COMMENTS -->
-    <div class="card" style="cursor:pointer">
-      <div class="card-hd">
-        <div>
-          <div class="card-title">Sheep & Lamb Comments</div>
-          <div class="card-sub">Weekly market commentary</div>
-        </div>
-        <button class="open-btn">Open →</button>
-      </div>
-      <div class="card-bd" style="padding-bottom:6px">
-        <div class="tab-row" style="margin-bottom:10px">
-          <button class="tab-btn active" style="padding:4px 10px;font-size:11px" onclick="switchSheep('trade',this)">Trade Lambs</button>
-          <button class="tab-btn" style="padding:4px 10px;font-size:11px" onclick="switchSheep('heavy',this)">Heavy Lambs</button>
-          <button class="tab-btn" style="padding:4px 10px;font-size:11px" onclick="switchSheep('mutton',this)">Mutton</button>
-        </div>
-        <div id="sheep-trade">
-          <table class="tbl">
-            <thead><tr><th>Category</th><th>Avg c/kg</th><th>Range</th><th>Δ</th><th></th></tr></thead>
-            <tbody>
-              <tr><td>Trade Lambs 20–24kg</td><td class="num">798c</td><td class="num">720–880</td><td class="pos">+15c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,14 8,12 16,10 24,8 32,7 40,5 48,4" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
-              <tr><td>Trade Lambs 18–20kg</td><td class="num">762c</td><td class="num">680–840</td><td class="pos">+20c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,15 8,13 16,11 24,9 32,6 40,4 48,3" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
-              <tr><td>Light Lambs &lt;18kg</td><td class="num">720c</td><td class="num">640–800</td><td class="neg">-12c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,6 8,7 16,9 24,10 32,12 40,13 48,14" fill="none" stroke="var(--red)" stroke-width="1.5"/></svg></td></tr>
-              <tr><td>Restocker Lambs</td><td class="num">680c</td><td class="num">600–740</td><td class="pos">+12c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,13 8,12 16,10 24,9 32,7 40,6 48,5" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div id="sheep-heavy" style="display:none">
-          <table class="tbl">
-            <thead><tr><th>Category</th><th>Avg c/kg</th><th>Range</th><th>Δ</th><th></th></tr></thead>
-            <tbody>
-              <tr><td>Heavy Lambs 24–26kg</td><td class="num">845c</td><td class="num">780–910</td><td class="pos">+22c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,14 8,11 16,9 24,7 32,5 40,3 48,2" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
-              <tr><td>Heavy Lambs 26kg+</td><td class="num">870c</td><td class="num">810–940</td><td class="pos">+18c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,13 8,11 16,9 24,8 32,6 40,4 48,3" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div id="sheep-mutton" style="display:none">
-          <table class="tbl">
-            <thead><tr><th>Category</th><th>Avg c/kg</th><th>Range</th><th>Δ</th><th></th></tr></thead>
-            <tbody>
-              <tr><td>Mutton</td><td class="num">420c</td><td class="num">350–490</td><td class="flat">8c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,9 8,9 16,10 24,9 32,10 40,9 48,10" fill="none" stroke="var(--muted)" stroke-width="1.5"/></svg></td></tr>
-              <tr><td>Wethers</td><td class="num">395c</td><td class="num">310–460</td><td class="neg">-15c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,5 8,7 16,9 24,11 32,12 40,14 48,15" fill="none" stroke="var(--red)" stroke-width="1.5"/></svg></td></tr>
-              <tr><td>Ewes</td><td class="num">$185</td><td class="num">$120–260</td><td class="pos">+$12</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,13 8,12 16,10 24,9 32,7 40,6 48,5" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- RAINFALL & SOLD NEAR ME -->
-  <div class="grid-2">
-    <!-- RAINFALL TRACKER -->
+    <!-- THIS WEEK SNAPSHOT -->
     <div class="card">
-      <div class="card-hd">
-        <div>
-          <div class="card-title">Rainfall Tracker</div>
-          <div class="card-sub">YTD decile · Bathurst region heatmap</div>
-        </div>
-        <button class="open-btn">Open →</button>
-      </div>
+      <div class="card-hd"><div><div class="card-title">This Week Snapshot</div><div class="card-sub">Volume & clearance by category</div></div></div>
       <div class="card-bd">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-          <div id="rain-map" style="border-radius:8px;min-height:220px"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+          <div style="text-align:center;padding:10px;background:var(--cool);border-radius:7px"><div style="font-size:22px;font-weight:900">553c</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase">Avg Steer c/kg</div></div>
+          <div style="text-align:center;padding:10px;background:var(--cool);border-radius:7px"><div style="font-size:22px;font-weight:900;color:var(--green)">+80c</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase">Steer Premium</div></div>
+          <div style="text-align:center;padding:10px;background:var(--cool);border-radius:7px"><div style="font-size:22px;font-weight:900">87%</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase">Steer Clearance</div></div>
+        </div>
+        <div class="ch"><canvas id="snapshot-ch"></canvas></div>
+        <div style="margin-top:12px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Clearance by Category</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div class="cb-wrap"><span style="font-size:12px;font-weight:600;width:70px">Steers</span><div class="cb-bg"><div class="cb-fill" style="width:87%;background:var(--blue)"></div></div><div class="cb-val">87%</div></div>
+          <div class="cb-wrap"><span style="font-size:12px;font-weight:600;width:70px">Heifers</span><div class="cb-bg"><div class="cb-fill" style="width:88%;background:#BE185D"></div></div><div class="cb-val">88%</div></div>
+          <div class="cb-wrap"><span style="font-size:12px;font-weight:600;width:70px">Breeding</span><div class="cb-bg"><div class="cb-fill" style="width:45%;background:var(--amber)"></div></div><div class="cb-val">45%</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: Stock Categories + Engagement + Market Pulse -->
+  <div class="g3">
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Stock Categories</div></div>
+      <table class="tbl"><thead><tr><th>Category</th><th>Offered</th><th>Clr%</th><th>Avg c/kg</th><th>Avg $/hd</th></tr></thead>
+      <tbody>
+        <tr><td><span class="cat-s">Steers</span></td><td class="num">5,829</td><td class="num">87%</td><td class="num">553c</td><td class="num">$1,613</td></tr>
+        <tr><td><span class="cat-h">Heifers</span></td><td class="num">4,296</td><td class="num">88%</td><td class="num">472c</td><td class="num">$1,504</td></tr>
+        <tr><td><span class="cat-b">Breeding</span></td><td class="num">4,938</td><td class="num">45%</td><td class="num">—</td><td class="num">$2,139</td></tr>
+        <tr><td>Other</td><td class="num">360</td><td class="num">64%</td><td class="num">475c</td><td class="num">$1,483</td></tr>
+      </tbody></table>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div><div class="card-title">Engagement</div><div class="card-sub">Platform activity this week</div></div></div>
+      <div class="card-bd">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+          <div style="padding:8px;background:var(--cool);border-radius:7px"><div style="font-size:17px;font-weight:800">35,996</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase">Views</div><span class="delta down" style="font-size:9px;margin-top:2px">▼ 36%</span></div>
+          <div style="padding:8px;background:var(--cool);border-radius:7px"><div style="font-size:17px;font-weight:800">10,775</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase">Saves</div><span class="delta down" style="font-size:9px;margin-top:2px">▼ 8%</span></div>
+          <div style="padding:8px;background:var(--cool);border-radius:7px"><div style="font-size:17px;font-weight:800">362</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase">Bidders</div><span class="delta down" style="font-size:9px;margin-top:2px">▼ 11%</span></div>
+          <div style="padding:8px;background:var(--cool);border-radius:7px"><div style="font-size:17px;font-weight:800">3,622</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase">Bids</div><span class="delta down" style="font-size:9px;margin-top:2px">▼ 2%</span></div>
+        </div>
+        <div style="font-size:10px;padding:7px;background:#FFFBEB;border-radius:5px;border:1px solid #FDE68A;color:#92400E">⚠️ <strong>Watch:</strong> Engagement declining WoW despite strong head count.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div><div class="card-title">Market Pulse</div><div class="card-sub">Composite signal</div></div></div>
+      <div class="card-bd" style="text-align:center">
+        <div style="font-size:40px;font-weight:900;color:var(--amber);margin-bottom:2px">⟳</div>
+        <div style="font-size:18px;font-weight:900;color:var(--amber)">MIXED</div>
+        <div style="font-size:10px;color:var(--muted);margin-bottom:12px">Supply building · Demand cooling</div>
+        <div style="display:flex;flex-direction:column;gap:5px;text-align:left">
+          <div style="display:flex;justify-content:space-between;padding:6px 8px;background:var(--cool);border-radius:5px;font-size:11px"><span style="font-weight:600">Total Head Streak</span><span style="font-weight:800">🔥 4 weeks</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 8px;background:var(--cool);border-radius:5px;font-size:11px"><span style="font-weight:600">VOR Streak</span><span style="font-weight:800">🔥 3 weeks</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 8px;background:var(--cool);border-radius:5px;font-size:11px"><span style="font-weight:600">Clearance Streak</span><span style="font-weight:800">— 0 weeks</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 8px;background:var(--cool);border-radius:5px;font-size:11px"><span style="font-weight:600">AYCI Streak</span><span style="font-weight:800">🔥 12 weeks</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ROW 3: Rainfall + Sold Near Me previews -->
+  <div class="g2">
+    <div class="card">
+      <div class="card-hd"><div><div class="card-title">Rainfall Tracker</div><div class="card-sub">YTD decile · Bathurst region</div></div><button class="open-btn">Open →</button></div>
+      <div class="card-bd">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div id="rain-map"></div>
           <div style="display:flex;flex-direction:column;justify-content:space-between">
             <div>
-              <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Your District — Bathurst</div>
-              <div style="font-size:38px;font-weight:900;line-height:1;letter-spacing:-1.5px;color:var(--navy)">78<sup style="font-size:14px;font-weight:600">th</sup></div>
-              <div style="font-size:13px;color:var(--muted);margin-top:2px">percentile</div>
-              <div style="margin-top:10px"><span class="kpi-delta up" style="font-size:12px">▲ 32mm last 7 days</span></div>
-              <div style="font-size:12px;color:var(--muted);margin-top:6px">Dry streak broken on day 41.</div>
+              <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Your District — Bathurst</div>
+              <div style="font-size:34px;font-weight:900;line-height:1;letter-spacing:-1.5px;color:var(--navy)">78<sup style="font-size:12px;font-weight:600">th</sup></div>
+              <div style="font-size:12px;color:var(--muted);margin-top:1px">percentile</div>
+              <div style="margin-top:8px"><span class="delta up" style="font-size:11px">▲ 32mm last 7 days</span></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Dry streak broken on day 41.</div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px">
               <div class="rain-stat"><div class="rain-val">412mm</div><div class="rain-lbl">FYTD</div></div>
               <div class="rain-stat"><div class="rain-val">238mm</div><div class="rain-lbl">CYTD</div></div>
               <div class="rain-stat"><div class="rain-val">226mm</div><div class="rain-lbl">Prev YTD</div></div>
@@ -649,184 +459,279 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cool); color: var(-
         </div>
       </div>
     </div>
-
-    <!-- SOLD NEAR ME -->
     <div class="card">
-      <div class="card-hd">
-        <div>
-          <div class="card-title">Sold Near Me</div>
-          <div class="card-sub">What's selling within 500km · Bathurst</div>
-        </div>
-        <button class="open-btn">Open →</button>
-      </div>
+      <div class="card-hd"><div><div class="card-title">Sold Near Me</div><div class="card-sub">Within 500km · Bathurst</div></div><button class="open-btn">Open →</button></div>
       <div class="card-bd">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div>
-            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px">Last 13 wks · 500km</div>
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light)"><span style="font-size:13px;color:var(--muted)">Lots</span><span class="num" style="font-weight:700">549</span></div>
-              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light)"><span style="font-size:13px;color:var(--muted)">Head</span><span class="num" style="font-weight:700">21,942</span></div>
-              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light)"><span style="font-size:13px;color:var(--muted)">Avg $/hd</span><span class="num" style="font-weight:700">$1,837</span></div>
-              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light)"><span style="font-size:13px;color:var(--muted)">Avg c/kg LW</span><span class="num" style="font-weight:700">512c</span></div>
-              <div style="display:flex;justify-content:space-between;padding:6px 0"><span style="font-size:13px;color:var(--muted)">Avg buyer dist</span><span class="num" style="font-weight:700">249 km</span></div>
+            <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Last 13 wks · 500km</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border-lt)"><span style="font-size:12px;color:var(--muted)">Lots</span><span class="num" style="font-weight:700">549</span></div>
+              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border-lt)"><span style="font-size:12px;color:var(--muted)">Head</span><span class="num" style="font-weight:700">21,942</span></div>
+              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border-lt)"><span style="font-size:12px;color:var(--muted)">Avg $/hd</span><span class="num" style="font-weight:700">$1,837</span></div>
+              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border-lt)"><span style="font-size:12px;color:var(--muted)">Avg c/kg LW</span><span class="num" style="font-weight:700">512c</span></div>
+              <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="font-size:12px;color:var(--muted)">Avg buyer dist</span><span class="num" style="font-weight:700">249 km</span></div>
             </div>
           </div>
-          <div id="snm-map" style="border-radius:8px;min-height:220px"></div>
+          <div id="snm-map"></div>
         </div>
       </div>
     </div>
   </div>
-</section>
 
-<div class="divider"></div>
+  <div class="divider"></div>
 
-<!-- ═══════════════════════════════════════ -->
-<!-- LOTS SOLD NEAR ME (Tiles)              -->
-<!-- ═══════════════════════════════════════ -->
-<section class="fi" style="animation-delay:.1s">
-  <div class="section-head">
-    <div>
-      <div class="sh-title">Lots Sold Near Me</div>
-      <div class="sh-sub">Recent sales within 500km of Bathurst</div>
+  <!-- LOT TILES -->
+  <div class="sh fi"><div><div class="sh-title">Lots Sold Near Me</div><div class="sh-sub">Recent sales within 500km of Bathurst</div></div><button class="open-btn" style="padding:4px 12px;font-size:11px">View all →</button></div>
+  <div class="lot-grid" id="lot-grid"></div>
+
+</div></div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- TAB 2: SOLD NEAR ME (placeholder)           -->
+<!-- ════════════════════════════════════════════ -->
+<div id="tab-sold" class="tab"><div class="hub">
+  <div class="sh fi"><div><div class="sh-title">Sold Near Me</div><div class="sh-sub">Explore cattle sale results across Australia · Click any pin for lot details</div></div><div class="badge">549 lots</div></div>
+  <div class="callout fi"><div class="callout-icon">🚧</div><div class="callout-text"><strong>Full Sold Near Me page</strong> — This tab will contain the full interactive map with filters (sex, radius, time period), map view modes (Map, Heat, Flow, Regions), lot detail popups, and summary statistics. Currently in development.</div></div>
+</div></div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- TAB 3: BREED INSIGHTS                       -->
+<!-- ════════════════════════════════════════════ -->
+<div id="tab-breed" class="tab"><div class="hub">
+  <div class="sh fi"><div><div class="sh-title">Breed Insights</div><div class="sh-sub">Price & volume performance by breed · based on sold near me data</div></div>
+    <div style="display:flex;gap:4px"><button class="tbtn active">c/kg</button><button class="tbtn">$/head</button><button class="tbtn">Lots</button></div>
+  </div>
+  <div class="g4 fi">
+    <div class="kpi"><div class="kpi-bar"></div><div class="kpi-lbl">Top Breed by Volume</div><div class="kpi-val" style="font-size:20px">Angus</div><span class="delta neutral">4,095 lots</span></div>
+    <div class="kpi"><div class="kpi-bar"></div><div class="kpi-lbl">Highest c/kg Breed</div><div class="kpi-val" style="font-size:20px">Red Angus</div><span class="delta up">507c avg</span></div>
+    <div class="kpi"><div class="kpi-bar"></div><div class="kpi-lbl">Angus Premium vs Mkt</div><div class="kpi-val" style="font-size:20px">+43c</div><span class="delta up">▲ vs all breeds avg</span></div>
+    <div class="kpi"><div class="kpi-bar"></div><div class="kpi-lbl">Breeds Tracked</div><div class="kpi-val" style="font-size:20px">12+</div><span class="delta neutral">in current data</span></div>
+  </div>
+  <div class="g2 fi">
+    <div class="card">
+      <div class="card-hd"><div><div class="card-title">Breed Performance Table</div><div class="card-sub">Avg c/kg LW, $/head and lot volume</div></div>
+        <div style="display:flex;gap:3px"><button class="pill active" onclick="setBrSex('All',this)">All</button><button class="pill" onclick="setBrSex('Steer',this)">Steers</button><button class="pill" onclick="setBrSex('Heifer',this)">Heifers</button></div>
+      </div>
+      <table class="tbl" id="breed-tbl"><thead><tr><th>Breed</th><th>Lots</th><th>Avg c/kg</th><th>Avg $/hd</th><th>vs Market</th><th>Top Sex</th></tr></thead><tbody id="breed-tbody"></tbody></table>
     </div>
-    <button class="open-btn" style="padding:5px 14px;font-size:12px;">View all lots →</button>
+    <div class="card"><div class="card-hd"><div><div class="card-title">Avg c/kg by Breed</div><div class="card-sub">Top 10 breeds by volume</div></div></div><div class="card-bd"><div class="ch-lg"><canvas id="breed-ch"></canvas></div></div></div>
   </div>
+</div></div>
 
-  <div class="lot-grid" id="lot-grid">
-    <!-- Populated by JS -->
+<!-- ════════════════════════════════════════════ -->
+<!-- TAB 4: PRICE INDICATORS                     -->
+<!-- ════════════════════════════════════════════ -->
+<div id="tab-indicators" class="tab"><div class="hub">
+  <div class="sh fi"><div><div class="sh-title">Price Comparison Indicators</div><div class="sh-sub">Calculated from sold near me data</div></div><div class="badge">Based on 15 May 2026 data</div></div>
+  <div class="ind-grid fi">
+    <div class="ind-card wnr-steer"><div class="ind-lbl">Weaner Steer Indicator</div><div class="ind-val" style="color:var(--blue)">534c</div><div class="ind-sub">c/kg LW · 250–350kg · ≤12 months · excl. Wagyu</div><div class="ind-sub">n = 611 lots</div>
+      <div class="prem-stat-row"><div class="prem-stat"><div class="ps-val">+8c</div><div class="ps-lbl">7 days</div></div><div class="prem-stat"><div class="ps-val">+22c</div><div class="ps-lbl">30 days</div></div><div class="prem-stat"><div class="ps-val">+131c</div><div class="ps-lbl">12 months</div></div><div class="prem-stat"><div class="ps-val">435c</div><div class="ps-lbl">All-time avg</div></div></div>
+    </div>
+    <div class="ind-card wnr-hfr"><div class="ind-lbl">Weaner Heifer Indicator</div><div class="ind-val" style="color:#BE185D">457c</div><div class="ind-sub">c/kg LW · Heifers excl. joined/station mated</div><div class="ind-sub">n = 2,345 lots</div>
+      <div class="prem-stat-row"><div class="prem-stat"><div class="ps-val">+5c</div><div class="ps-lbl">7 days</div></div><div class="prem-stat"><div class="ps-val">+18c</div><div class="ps-lbl">30 days</div></div><div class="prem-stat"><div class="ps-val">+98c</div><div class="ps-lbl">12 months</div></div><div class="prem-stat"><div class="ps-val">368c</div><div class="ps-lbl">All-time avg</div></div></div>
+    </div>
+    <div class="ind-card fdr-steer"><div class="ind-lbl">Feeder Steer Indicator</div><div class="ind-val" style="color:var(--amber)">498c</div><div class="ind-sub">c/kg LW · 350–450kg steers · excl. Wagyu</div><div class="ind-sub">n = 656 lots</div>
+      <div class="prem-stat-row"><div class="prem-stat"><div class="ps-val">+3c</div><div class="ps-lbl">7 days</div></div><div class="prem-stat"><div class="ps-val">+15c</div><div class="ps-lbl">30 days</div></div><div class="prem-stat"><div class="ps-val">+98c</div><div class="ps-lbl">12 months</div></div><div class="prem-stat"><div class="ps-val">402c</div><div class="ps-lbl">All-time avg</div></div></div>
+    </div>
   </div>
-</section>
+  <div class="g2 fi">
+    <div class="card"><div class="card-hd"><div><div class="card-title">Weaner Steer vs Weaner Heifer Premium</div><div class="card-sub">c/kg LW differential over time</div></div></div>
+      <div class="card-bd">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div><div style="font-size:30px;font-weight:900;color:var(--blue)">+77.5c</div><div style="font-size:11px;color:var(--muted)">Current steer premium over heifers</div></div>
+          <div style="text-align:right"><span class="delta up" style="font-size:12px">▲ Above long-run avg</span><div style="font-size:10px;color:var(--muted);margin-top:3px">Long-run avg: ~40–60c</div></div>
+        </div>
+        <div class="ch-lg"><canvas id="wnr-prem-ch"></canvas></div>
+      </div>
+    </div>
+    <div class="card"><div class="card-hd"><div><div class="card-title">Feeder Steer vs Weaner Steer Premium</div><div class="card-sub">c/kg LW differential — signals feedlot demand</div></div></div>
+      <div class="card-bd">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div><div style="font-size:30px;font-weight:900;color:var(--red)">-36.3c</div><div style="font-size:11px;color:var(--muted)">Feeder discount to weaners (c/kg)</div></div>
+          <div style="text-align:right"><span class="delta down" style="font-size:12px">▼ Feedlot demand soft</span><div style="font-size:10px;color:var(--muted);margin-top:3px">Weaners outpricing feeders</div></div>
+        </div>
+        <div class="ch-lg"><canvas id="fdr-prem-ch"></canvas></div>
+      </div>
+    </div>
+  </div>
+  <div class="card fi"><div class="card-hd"><div><div class="card-title">AuctionsPlus Young Cattle Indicator (AYCI)</div><div class="card-sub">c/kg LW — weekly history</div></div></div>
+    <div class="card-bd"><div class="ch-xl"><canvas id="ayci-ch"></canvas></div></div>
+  </div>
+</div></div>
 
-</div><!-- end .hub -->
+<!-- ════════════════════════════════════════════ -->
+<!-- TAB 5: REGIONAL                             -->
+<!-- ════════════════════════════════════════════ -->
+<div id="tab-regional" class="tab"><div class="hub">
+  <div class="sh fi"><div><div class="sh-title">Regional Insights</div><div class="sh-sub">State & regional breakdown</div></div>
+    <div style="display:flex;gap:4px"><button class="tbtn active" onclick="setRM('price',this)">$/head</button><button class="tbtn" onclick="setRM('ckg',this)">c/kg</button><button class="tbtn" onclick="setRM('lots',this)">Lots</button><button class="tbtn" onclick="setRM('clr',this)">Clr%</button></div>
+  </div>
+  <div class="rg fi" id="state-grid"></div>
+  <div class="card fi"><div class="card-hd"><div class="card-title">State Breakdown</div></div>
+    <table class="tbl"><thead><tr><th>State</th><th>Head</th><th>% Total</th><th>Sold</th><th>Clr%</th><th>Avg $/hd</th><th>Avg c/kg</th><th>Interstate%</th></tr></thead>
+    <tbody>
+      <tr><td><strong>NSW</strong></td><td class="num">9,983</td><td class="num">65%</td><td class="num">6,597</td><td class="num">66%</td><td class="num">$1,809</td><td class="num">497c</td><td class="num">48%</td></tr>
+      <tr><td><strong>VIC</strong></td><td class="num">2,068</td><td class="num">13%</td><td class="num">1,757</td><td class="num">85%</td><td class="num">$2,207</td><td class="num">541c</td><td class="num">30%</td></tr>
+      <tr><td><strong>QLD</strong></td><td class="num">1,729</td><td class="num">11%</td><td class="num">1,003</td><td class="num">58%</td><td class="num">$1,786</td><td class="num">502c</td><td class="num">22%</td></tr>
+      <tr><td><strong>SA</strong></td><td class="num">1,361</td><td class="num">9%</td><td class="num">925</td><td class="num">68%</td><td class="num">$1,654</td><td class="num">488c</td><td class="num">58%</td></tr>
+      <tr><td><strong>TAS</strong></td><td class="num">282</td><td class="num">2%</td><td class="num">204</td><td class="num">72%</td><td class="num">$1,693</td><td class="num">512c</td><td class="num">13%</td></tr>
+      <tr style="background:var(--cool);font-weight:700"><td>Total</td><td class="num">15,423</td><td class="num">100%</td><td class="num">10,486</td><td class="num">68%</td><td class="num">$1,830</td><td class="num">508c</td><td class="num">43%</td></tr>
+    </tbody></table>
+  </div>
+  <div class="g2 fi" style="margin-top:14px">
+    <div class="card"><div class="card-hd"><div class="card-title">Head Offered by State</div></div><div class="card-bd"><div class="ch"><canvas id="sv-ch"></canvas></div></div></div>
+    <div class="card"><div class="card-hd"><div class="card-title">Avg $/head by State</div></div><div class="card-bd"><div class="ch"><canvas id="sp-ch"></canvas></div></div></div>
+  </div>
+</div></div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- TAB 6: TRENDS                               -->
+<!-- ════════════════════════════════════════════ -->
+<div id="tab-trends" class="tab"><div class="hub">
+  <div class="sh fi"><div><div class="sh-title">Price Trend Explorer</div><div class="sh-sub">Historical c/kg LW · Steers & Heifers by weight band</div></div></div>
+  <div class="card fi" style="margin-bottom:16px"><div class="card-hd"><div><div class="card-title">Price by Weight Band (c/kg LW)</div><div class="card-sub">This week · Steers vs Heifers</div></div></div>
+    <div class="card-bd"><div class="ch-lg"><canvas id="wb-ch"></canvas></div></div>
+  </div>
+  <div class="card fi"><div class="card-hd"><div><div class="card-title">Historical Comparison</div><div class="card-sub">Weekly c/kg trend · Select categories</div></div>
+    <div style="display:flex;gap:4px"><button class="tbtn">3M</button><button class="tbtn">6M</button><button class="tbtn active">1Y</button><button class="tbtn">2Y</button></div>
+  </div>
+    <div class="card-bd"><div class="ch-xl"><canvas id="hist-ch"></canvas></div></div>
+  </div>
+</div></div>
 
 <footer class="footer">© 2026 AuctionsPlus — Prototype Demo</footer>
 
-<!-- ═══════════════════════════════════════ -->
-<!-- JAVASCRIPT                             -->
-<!-- ═══════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- JAVASCRIPT                                  -->
+<!-- ═══════════════════════════════════════════ -->
 <script>
-// ── INDICATOR TAB SWITCHING ──
+// ── NAV ──
+function go(tab, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+  // Lazy init
+  if(tab==='breed' && !breedInit) initBreed();
+  if(tab==='indicators' && !indInit) initIndCharts();
+  if(tab==='regional' && !regInit) initRegCharts();
+  if(tab==='trends' && !trendInit) initTrendCharts();
+  // Fix maps
+  setTimeout(()=>{if(snmMap)snmMap.invalidateSize();if(rainMap)rainMap.invalidateSize();},100);
+}
+
+// ── INDICATOR TABS ──
 function switchInd(panel, btn) {
   document.querySelectorAll('.ind-panel').forEach(p => p.style.display = 'none');
-  document.querySelectorAll('#ind-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#ind-tabs .tbtn').forEach(b => b.classList.remove('active'));
   document.getElementById('ind-' + panel).style.display = 'block';
   btn.classList.add('active');
 }
 
-// ── CATTLE COMMENT TABS ──
+// ── CATTLE/SHEEP TABS ──
 function switchCattle(sub, btn) {
-  ['steers','heifers','breeding'].forEach(s => {
-    document.getElementById('cattle-' + s).style.display = s === sub ? 'block' : 'none';
-  });
-  btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  ['steers','heifers','breeding'].forEach(s => document.getElementById('cattle-'+s).style.display = s===sub?'block':'none');
+  btn.parentElement.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
 }
-
-// ── SHEEP COMMENT TABS ──
 function switchSheep(sub, btn) {
-  ['trade','heavy','mutton'].forEach(s => {
-    document.getElementById('sheep-' + s).style.display = s === sub ? 'block' : 'none';
-  });
-  btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  ['trade','heavy','mutton'].forEach(s => document.getElementById('sheep-'+s).style.display = s===sub?'block':'none');
+  btn.parentElement.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
 }
 
 // ── DATE PILLS ──
-document.querySelectorAll('.date-pill').forEach(p => {
-  p.addEventListener('click', () => {
-    document.querySelectorAll('.date-pill').forEach(d => d.classList.remove('active'));
-    p.classList.add('active');
-  });
+document.querySelectorAll('.date-pill').forEach(p => p.addEventListener('click', () => {
+  document.querySelectorAll('.date-pill').forEach(d => d.classList.remove('active'));
+  p.classList.add('active');
+}));
+
+// ── SNAPSHOT CHART ──
+new Chart(document.getElementById('snapshot-ch'), {
+  type:'bar', data:{ labels:['Steers','Heifers','Breeding'],
+    datasets:[{data:[5829,4296,4938],backgroundColor:['#1542A7','#BE185D','#d97706'],borderRadius:5}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#F1F5F9'},ticks:{font:{size:10}}},x:{grid:{display:false},ticks:{font:{size:11}}}}}
 });
 
-// ── SOLD NEAR ME MAP ──
-const snmMap = L.map('snm-map', { zoomControl: false, attributionControl: false }).setView([-33.42, 149.58], 7);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 18 }).addTo(snmMap);
+// ── MAPS ──
+const snmMap = L.map('snm-map',{zoomControl:false,attributionControl:false}).setView([-33.42,149.58],7);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:18}).addTo(snmMap);
+const snmPins=[[-33.42,149.58,'#1542A7'],[-33.15,149.12,'#0ea5e9'],[-33.85,150.05,'#1542A7'],[-32.75,148.90,'#dc2626'],[-34.10,149.75,'#0ea5e9'],[-33.60,148.45,'#1542A7'],[-32.95,150.20,'#0ea5e9'],[-33.35,149.90,'#1542A7'],[-34.30,148.80,'#8b5cf6'],[-33.05,149.35,'#dc2626'],[-33.75,150.40,'#1542A7'],[-32.60,149.60,'#8b5cf6']];
+snmPins.forEach(p=>L.circleMarker([p[0],p[1]],{radius:5,fillColor:p[2],fillOpacity:.8,color:'#fff',weight:1.5}).addTo(snmMap));
+L.circle([-33.42,149.58],{radius:500000,color:'#1971D8',fillColor:'#1971D8',fillOpacity:.03,weight:1,dashArray:'6 4'}).addTo(snmMap);
 
-// Mock lot pins around Bathurst
-const snmLots = [
-  { lat: -33.42, lng: 149.58, price: '$2,110', breed: 'Angus Steers' },
-  { lat: -33.15, lng: 149.12, price: '$1,840', breed: 'Hereford Heifers' },
-  { lat: -33.85, lng: 150.05, price: '$1,720', breed: 'Angus Steers' },
-  { lat: -32.75, lng: 148.90, price: '$2,340', breed: 'Angus Cows & Calves' },
-  { lat: -34.10, lng: 149.75, price: '$1,645', breed: 'Speckle Park Heifers' },
-  { lat: -33.60, lng: 148.45, price: '$1,900', breed: 'Angus Steers' },
-  { lat: -32.95, lng: 150.20, price: '$1,430', breed: 'Charolais Heifers' },
-  { lat: -33.35, lng: 149.90, price: '$2,220', breed: 'Angus Steers' },
-  { lat: -34.30, lng: 148.80, price: '$1,870', breed: 'Shorthorn Steers' },
-  { lat: -33.05, lng: 149.35, price: '$2,920', breed: 'Angus Cows & Calves' },
-  { lat: -33.75, lng: 150.40, price: '$1,550', breed: 'Hereford Steers' },
-  { lat: -32.60, lng: 149.60, price: '$1,365', breed: 'Angus Weaners' },
-];
-const sexColors = { 'Steers': '#1542A7', 'Heifers': '#0ea5e9', 'Cows & Calves': '#dc2626', 'Weaners': '#8b5cf6' };
-snmLots.forEach(l => {
-  const sex = l.breed.split(' ').pop();
-  const combined = l.breed.includes('Cows') ? 'Cows & Calves' : sex;
-  L.circleMarker([l.lat, l.lng], {
-    radius: 6, fillColor: sexColors[combined] || '#1542A7', fillOpacity: .8,
-    color: '#fff', weight: 1.5
-  }).bindTooltip(`<strong>${l.price}</strong><br>${l.breed}`, { direction: 'top', offset: [0, -8] }).addTo(snmMap);
-});
-// Radius circle
-L.circle([-33.42, 149.58], { radius: 500000, color: 'var(--blue-vivid)', fillColor: '#1971D8', fillOpacity: .04, weight: 1, dashArray: '6 4' }).addTo(snmMap);
-
-// ── RAINFALL MAP ──
-const rainMap = L.map('rain-map', { zoomControl: false, attributionControl: false }).setView([-33.42, 149.58], 7);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 18 }).addTo(rainMap);
-// Heat-like coloured circles for rainfall zones
-const rainZones = [
-  { lat: -33.42, lng: 149.58, r: 35000, color: '#16a34a', label: 'Bathurst' },
-  { lat: -33.15, lng: 148.80, r: 30000, color: '#22c55e', label: 'Orange' },
-  { lat: -33.85, lng: 150.20, r: 28000, color: '#4ade80', label: 'Oberon' },
-  { lat: -32.60, lng: 149.10, r: 32000, color: '#86efac', label: 'Mudgee' },
-  { lat: -34.30, lng: 149.50, r: 26000, color: '#bbf7d0', label: 'Cowra' },
-  { lat: -33.00, lng: 150.10, r: 25000, color: '#059669', label: 'Lithgow' },
-  { lat: -33.50, lng: 148.20, r: 28000, color: '#a7f3d0', label: 'Molong' },
-];
-rainZones.forEach(z => {
-  L.circle([z.lat, z.lng], { radius: z.r, color: 'transparent', fillColor: z.color, fillOpacity: .35, weight: 0 }).addTo(rainMap);
-});
-L.marker([-33.42, 149.58], {
-  icon: L.divIcon({ html: '<div style="width:10px;height:10px;background:#002341;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>', iconSize: [10, 10], iconAnchor: [5, 5] })
-}).addTo(rainMap);
+const rainMap = L.map('rain-map',{zoomControl:false,attributionControl:false}).setView([-33.42,149.58],7);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:18}).addTo(rainMap);
+[[-33.42,149.58,35000,'#16a34a'],[-33.15,148.80,30000,'#22c55e'],[-33.85,150.20,28000,'#4ade80'],[-32.60,149.10,32000,'#86efac'],[-34.30,149.50,26000,'#bbf7d0'],[-33.00,150.10,25000,'#059669'],[-33.50,148.20,28000,'#a7f3d0']].forEach(z=>L.circle([z[0],z[1]],{radius:z[2],color:'transparent',fillColor:z[3],fillOpacity:.35,weight:0}).addTo(rainMap));
+L.marker([-33.42,149.58],{icon:L.divIcon({html:'<div style="width:8px;height:8px;background:#002341;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>',iconSize:[8,8],iconAnchor:[4,4]})}).addTo(rainMap);
+setTimeout(()=>{snmMap.invalidateSize();rainMap.invalidateSize()},200);
 
 // ── LOT TILES ──
-const LOTS = [
-  { title: 'Lot 223 — 16 Backgrounder Steers', loc: 'TOOMA, NSW', vendor: 'Kooyong Partners', price: '$2,110', unit: '$/Head', ckg: '528c Live · 980c Dressed', breed: 'Angus', bidders: 3, views: 298, saves: 47, img: 'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20251209102947205_45026e1c-8cbb-4773-aff7-a7e518461f66.jpg' },
-  { title: 'Lot 199 — 72 Feeder Steers', loc: 'GUNNEDAH, NSW', vendor: '4P Pastoral', price: '$2,395', unit: '$/Head', ckg: '518c Live · 980c Dressed', breed: 'Angus', bidders: 5, views: 414, saves: 23, img: 'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20260121211512388_ccadf91a-47e0-4775-817d-bff0da8404db.jpg' },
-  { title: 'Lot 200 — 78 Feeder Steers', loc: 'MUDGEE, NSW', vendor: 'Valley View', price: '$1,840', unit: '$/Head', ckg: '542c Live · 1010c Dressed', breed: 'Angus', bidders: 1, views: 103, saves: 48, img: 'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20251119231447539_73b413fc-28d7-430d-b994-e97cd8060015.jpg' },
-  { title: 'Lot 145 — 24 Weaner Heifers', loc: 'GLEN INNES, NSW', vendor: 'Doyle Family', price: '$870', unit: '$/Head', ckg: '396c Live', breed: 'Angus', bidders: 2, views: 174, saves: 26, img: 'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20260225193724459_940c1f4d-c9ac-4ab0-8151-186e03df74d8.jpg' },
-  { title: 'Lot 312 — 40 Cows & Calves', loc: 'BRAIDWOOD, NSW', vendor: 'Mt Douro Pastoral', price: '$3,575', unit: '$/Head', ckg: '—', breed: 'Angus', bidders: 3, views: 307, saves: 118, img: 'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20250923195250062_e0974b2a-edfa-4311-b0ae-26560e1a5971.jpg' },
-  { title: 'Lot 88 — 35 Yearling Steers', loc: 'MERRIWA, NSW', vendor: 'Doolan Partners', price: '$2,220', unit: '$/Head', ckg: '530c Live · 988c Dressed', breed: 'Angus', bidders: 5, views: 103, saves: 48, img: 'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20251119231447539_73b413fc-28d7-430d-b994-e97cd8060015.jpg' },
+const LOTS_TILE=[
+  {t:'Lot 223 — 16 Backgrounder Steers',loc:'TOOMA, NSW',v:'Kooyong Partners',p:'$2,110',c:'528c Live · 980c Dressed',br:'Angus',bd:3,vw:298,sv:47,img:'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20251209102947205_45026e1c-8cbb-4773-aff7-a7e518461f66.jpg'},
+  {t:'Lot 199 — 72 Feeder Steers',loc:'GUNNEDAH, NSW',v:'4P Pastoral',p:'$2,395',c:'518c Live · 980c Dressed',br:'Angus',bd:5,vw:414,sv:23,img:'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20260121211512388_ccadf91a-47e0-4775-817d-bff0da8404db.jpg'},
+  {t:'Lot 200 — 78 Feeder Steers',loc:'MUDGEE, NSW',v:'Valley View',p:'$1,840',c:'542c Live · 1010c Dressed',br:'Angus',bd:1,vw:103,sv:48,img:'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20251119231447539_73b413fc-28d7-430d-b994-e97cd8060015.jpg'},
+  {t:'Lot 145 — 24 Weaner Heifers',loc:'GLEN INNES, NSW',v:'Doyle Family',p:'$870',c:'396c Live',br:'Angus',bd:2,vw:174,sv:26,img:'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20260225193724459_940c1f4d-c9ac-4ab0-8151-186e03df74d8.jpg'},
+  {t:'Lot 312 — 40 Cows & Calves',loc:'BRAIDWOOD, NSW',v:'Mt Douro Pastoral',p:'$3,575',c:'—',br:'Angus',bd:3,vw:307,sv:118,img:'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20250923195250062_e0974b2a-edfa-4311-b0ae-26560e1a5971.jpg'},
+  {t:'Lot 88 — 35 Yearling Steers',loc:'MERRIWA, NSW',v:'Doolan Partners',p:'$2,220',c:'530c Live · 988c Dressed',br:'Angus',bd:5,vw:103,sv:48,img:'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20251104135732307_4d125245-3f6a-4a3b-baa3-4db8a9b53c62.jpg'},
 ];
+document.getElementById('lot-grid').innerHTML=LOTS_TILE.map(l=>`<div class="lot-tile"><img class="lot-img" src="${l.img}" onerror="this.style.display='none'"><div class="lot-body"><div class="lot-title">${l.t}</div><div class="lot-loc">📍 ${l.loc} · 🧑‍🌾 ${l.v}</div><div style="display:flex;justify-content:space-between;align-items:baseline"><div><div class="lot-price">${l.p}<span style="font-size:10px;font-weight:500;color:var(--muted)">/Head</span></div><div class="lot-ckg">${l.c}</div></div><a href="#" class="lot-assess">View Assessment →</a></div><div class="lot-meta"><span>👁 ${l.vw}</span><span>💾 ${l.sv}</span><span>🙋 ${l.bd} bidders</span><span>🐄 ${l.br}</span></div></div></div>`).join('');
 
-const lotGrid = document.getElementById('lot-grid');
-LOTS.forEach(l => {
-  lotGrid.innerHTML += `
-    <div class="lot-tile">
-      <img class="lot-img" src="${l.img}" alt="${l.title}" onerror="this.style.background='linear-gradient(135deg,#E2E8F0,#CBD5E1)';this.style.display='block'">
-      <div class="lot-body">
-        <div class="lot-title">${l.title}</div>
-        <div class="lot-loc">📍 ${l.loc} · 🧑‍🌾 ${l.vendor}</div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline">
-          <div>
-            <div class="lot-price">${l.price}<span style="font-size:11px;font-weight:500;color:var(--muted)">/${l.unit.split('/')[1] || 'Head'}</span></div>
-            <div class="lot-ckg">${l.ckg}</div>
-          </div>
-          <a href="#" class="lot-assess">View Assessment →</a>
-        </div>
-        <div class="lot-meta">
-          <span>👁 ${l.views}</span>
-          <span>💾 ${l.saves}</span>
-          <span>🙋 ${l.bidders} bidders</span>
-          <span>🐄 ${l.breed}</span>
-        </div>
-      </div>
-    </div>`;
-});
+// ── BREED DATA & CHARTS ──
+const BREEDS=[{breed:'Angus',lots:4095,avg_price:1868,avg_ckg:500.7,sexes:{Steer:1573,Heifer:1610,Cow:893}},{breed:'Hereford',lots:356,avg_price:1827,avg_ckg:470.8,sexes:{Steer:153,Heifer:121,Cow:81}},{breed:'Santa Gertrudis',lots:182,avg_price:1741,avg_ckg:482.1,sexes:{Steer:65,Heifer:76,Cow:37}},{breed:'Shorthorn',lots:170,avg_price:1740,avg_ckg:469.1,sexes:{Steer:76,Heifer:60,Cow:32}},{breed:'Droughtmaster',lots:162,avg_price:1398,avg_ckg:457.6,sexes:{Steer:67,Heifer:79,Cow:13}},{breed:'Speckle Park',lots:150,avg_price:1615,avg_ckg:447.4,sexes:{Steer:50,Heifer:61,Cow:36}},{breed:'Charolais',lots:129,avg_price:1657,avg_ckg:466.6,sexes:{Steer:48,Heifer:58,Cow:20}},{breed:'Wagyu',lots:91,avg_price:1499,avg_ckg:472.7,sexes:{Steer:21,Heifer:29,Cow:16}},{breed:'Murray Grey',lots:88,avg_price:1773,avg_ckg:472,sexes:{Steer:43,Heifer:29,Cow:15}},{breed:'Red Angus',lots:67,avg_price:1862,avg_ckg:507,sexes:{Steer:27,Heifer:32,Cow:7}},{breed:'Simmental',lots:50,avg_price:1800,avg_ckg:474.2,sexes:{Steer:18,Heifer:21,Cow:9}},{breed:'Brahman',lots:48,avg_price:1389,avg_ckg:400.1,sexes:{Steer:17,Heifer:21,Cow:9}}];
+const mktAvg=458;
+let breedInit=false,breedChRef=null;
+function initBreed(){breedInit=true;renderBreedTable('All');renderBreedChart();}
+function renderBreedTable(sex){
+  document.getElementById('breed-tbody').innerHTML=BREEDS.map(b=>{
+    const topSex=Object.entries(b.sexes).sort((a,z)=>z[1]-a[1])[0][0];
+    const diff=b.avg_ckg-mktAvg;
+    return `<tr><td style="font-weight:700">${b.breed}</td><td class="num">${b.lots.toLocaleString()}</td><td class="num">${b.avg_ckg}c</td><td class="num">$${b.avg_price.toLocaleString()}</td><td class="${diff>=0?'pos':'neg'}">${diff>=0?'+':''}${diff.toFixed(1)}c</td><td><span class="${topSex==='Steer'?'cat-s':topSex==='Heifer'?'cat-h':'cat-b'}">${topSex}</span></td></tr>`;
+  }).join('');
+}
+function renderBreedChart(){
+  if(breedChRef)breedChRef.destroy();
+  const t10=BREEDS.slice(0,10);
+  breedChRef=new Chart(document.getElementById('breed-ch'),{type:'bar',data:{labels:t10.map(b=>b.breed),datasets:[{label:'Avg c/kg LW',data:t10.map(b=>b.avg_ckg),backgroundColor:t10.map(b=>b.avg_ckg>mktAvg?'#1542A7':'#94A3B8'),borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#F1F5F9'},ticks:{font:{size:10},callback:v=>v+'c'}},y:{grid:{display:false},ticks:{font:{size:10}}}}}});
+}
+function setBrSex(s,btn){document.querySelectorAll('.card-hd .pill').forEach(p=>p.classList.remove('active'));btn.classList.add('active');renderBreedTable(s);}
 
-// Fix map sizing after layout
-setTimeout(() => { snmMap.invalidateSize(); rainMap.invalidateSize(); }, 200);
+// ── INDICATOR CHARTS ──
+let indInit=false;
+function initIndCharts(){
+  indInit=true;
+  const wks=['Mar-25','Jun-25','Sep-25','Dec-25','Mar-26'];
+  new Chart(document.getElementById('wnr-prem-ch'),{type:'line',data:{labels:wks,datasets:[{label:'Weaner Steer c/kg',data:[480,510,540,525,534],borderColor:'#1542A7',backgroundColor:'rgba(21,66,167,.07)',borderWidth:2.5,pointRadius:4,tension:.3,fill:true},{label:'Weaner Heifer c/kg',data:[395,420,445,445,457],borderColor:'#BE185D',backgroundColor:'rgba(190,24,93,.05)',borderWidth:2,pointRadius:4,tension:.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:11}}}},scales:{y:{grid:{color:'#F1F5F9'},ticks:{font:{size:10},callback:v=>v+'c'}},x:{grid:{color:'#F1F5F9'},ticks:{font:{size:10}}}}}});
+  new Chart(document.getElementById('fdr-prem-ch'),{type:'line',data:{labels:wks,datasets:[{label:'Feeder Steer c/kg',data:[460,490,510,492,498],borderColor:'#d97706',backgroundColor:'rgba(217,119,6,.07)',borderWidth:2.5,pointRadius:4,tension:.3,fill:true},{label:'Weaner Steer c/kg',data:[480,510,540,525,534],borderColor:'#1542A7',backgroundColor:'rgba(21,66,167,.04)',borderWidth:2,pointRadius:4,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:11}}}},scales:{y:{grid:{color:'#F1F5F9'},ticks:{font:{size:10},callback:v=>v+'c'}},x:{grid:{color:'#F1F5F9'},ticks:{font:{size:10}}}}}});
+  new Chart(document.getElementById('ayci-ch'),{type:'line',data:{labels:['Jan-22','Jul-22','Jan-23','Jul-23','Jan-24','Jul-24','Jan-25','Jul-25','Jan-26','May-26'],datasets:[{label:'AYCI c/kg LW',data:[660,680,600,380,295,340,400,460,505,516],borderColor:'#1542A7',backgroundColor:'rgba(21,66,167,.08)',borderWidth:2.5,pointRadius:4,tension:.4,fill:true},{label:'All-time Avg',data:Array(10).fill(435),borderColor:'#94A3B8',borderWidth:1.5,borderDash:[4,4],pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:11}}}},scales:{y:{grid:{color:'#F1F5F9'},ticks:{font:{size:10},callback:v=>v+'c'},min:200},x:{grid:{color:'#F1F5F9'},ticks:{font:{size:10}}}}}});
+}
+
+// ── REGIONAL ──
+const stData=[{name:'NSW',lots:9983,price:1809,ckg:497,clr:66,col:'#1542A7',bar:85},{name:'VIC',lots:2068,price:2207,ckg:541,clr:85,col:'#0EA5E9',bar:70},{name:'QLD',lots:1729,price:1786,ckg:502,clr:58,col:'#16a34a',bar:55},{name:'SA',lots:1361,price:1654,ckg:488,clr:68,col:'#d97706',bar:45},{name:'TAS',lots:282,price:1693,ckg:512,clr:72,col:'#8B5CF6',bar:20}];
+const stFull={NSW:'New South Wales',VIC:'Victoria',QLD:'Queensland',SA:'South Australia',TAS:'Tasmania'};
+let regInit=false,rm='price';
+function setRM(m,btn){document.querySelectorAll('#tab-regional .tbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');rm=m;renderSC();}
+function renderSC(){
+  const mm={price:{k:'price',f:v=>'$'+v.toLocaleString()},ckg:{k:'ckg',f:v=>v+'c'},lots:{k:'lots',f:v=>v.toLocaleString()},clr:{k:'clr',f:v=>v+'%'}};
+  const m=mm[rm];
+  document.getElementById('state-grid').innerHTML=[...stData].sort((a,b)=>b[m.k]-a[m.k]).map(s=>`<div class="sc"><div class="sc-bar" style="background:${s.col}"></div><div class="sc-hd"><div><div class="sc-name">${stFull[s.name]}</div><div class="sc-lots">${s.lots.toLocaleString()} lots</div></div><div style="font-size:22px;font-weight:900;color:${s.col}">${m.f(s[m.k])}</div></div><div class="sc-mets"><div class="scm"><div class="scmv">$${s.price.toLocaleString()}</div><div class="scml">$/hd</div></div><div class="scm"><div class="scmv">${s.ckg}c</div><div class="scml">c/kg LW</div></div><div class="scm"><div class="scmv">${s.clr}%</div><div class="scml">Clr%</div></div></div><div class="sc-stripe" style="background:linear-gradient(90deg,${s.col} ${s.bar}%,var(--border) ${s.bar}%)"></div></div>`).join('');
+}
+renderSC();
+function initRegCharts(){
+  regInit=true;
+  new Chart(document.getElementById('sv-ch'),{type:'bar',data:{labels:stData.map(s=>s.name),datasets:[{data:stData.map(s=>s.lots),backgroundColor:stData.map(s=>s.col),borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#F1F5F9'},ticks:{font:{size:10}}},x:{grid:{display:false},ticks:{font:{size:10}}}}}});
+  new Chart(document.getElementById('sp-ch'),{type:'bar',data:{labels:stData.map(s=>s.name),datasets:[{data:stData.map(s=>s.price),backgroundColor:stData.map(s=>s.col),borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#F1F5F9'},ticks:{font:{size:10},callback:v=>'$'+v.toLocaleString()}},x:{grid:{display:false},ticks:{font:{size:10}}}}}});
+}
+
+// ── TRENDS ──
+let trendInit=false;
+function initTrendCharts(){
+  trendInit=true;
+  new Chart(document.getElementById('wb-ch'),{type:'line',data:{labels:['0–200kg','200–280kg','280–330kg','330–400kg','400kg+'],datasets:[{label:'Steers',data:[582,564,548,537,526],borderColor:'#1542A7',backgroundColor:'rgba(21,66,167,.07)',borderWidth:2.5,pointRadius:5,tension:.3,fill:true},{label:'Heifers',data:[545,498,474,458,440],borderColor:'#BE185D',backgroundColor:'rgba(190,24,93,.05)',borderWidth:2.5,pointRadius:5,tension:.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:11}}}},scales:{y:{grid:{color:'#F1F5F9'},ticks:{font:{size:10},callback:v=>v+'c'}},x:{grid:{color:'#F1F5F9'},ticks:{font:{size:10}}}}}});
+  const wks=['Mar 25','Apr 25','May 25','Jun 25','Jul 25','Aug 25','Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26'];
+  new Chart(document.getElementById('hist-ch'),{type:'line',data:{labels:wks,datasets:[{label:'Steers 280–330kg',data:[398,410,425,438,462,490,510,560,580,560,540,545,548],borderColor:'#1542A7',backgroundColor:'rgba(21,66,167,.06)',borderWidth:2.5,pointRadius:3,tension:.4,fill:true},{label:'Steers 330–400kg',data:[385,395,415,428,450,478,498,548,568,548,528,532,537],borderColor:'#0EA5E9',backgroundColor:'rgba(14,165,233,.04)',borderWidth:2,pointRadius:3,tension:.4,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:11}}}},scales:{y:{grid:{color:'#F1F5F9'},ticks:{font:{size:10},callback:v=>v+'c'}},x:{grid:{color:'#F1F5F9'},ticks:{font:{size:10}}}}}});
+}
 </script>
 </body>
 </html>
