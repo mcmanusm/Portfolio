@@ -705,6 +705,25 @@ function switchSheep(sub, btn) {
   btn.classList.add('active');
 }
 
+// ── CAROUSEL ──
+const panels = ['snapshot','categories','engagement','pulse'];
+let curPanel = 0;
+function showPanel(name, btn) {
+  curPanel = panels.indexOf(name);
+  panels.forEach(p => document.getElementById('panel-'+p).style.display = 'none');
+  document.getElementById('panel-'+name).style.display = 'block';
+  if(btn) {
+    document.querySelectorAll('#carousel-tabs .tbtn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  } else {
+    const tabs = document.querySelectorAll('#carousel-tabs .tbtn');
+    tabs.forEach((b,i) => b.classList.toggle('active', i===curPanel));
+  }
+  document.getElementById('carousel-counter').textContent = (curPanel+1)+' / '+panels.length;
+}
+function carouselNext() { showPanel(panels[(curPanel+1)%panels.length]); }
+function carouselPrev() { showPanel(panels[(curPanel-1+panels.length)%panels.length]); }
+
 // ── DATE PILLS ──
 document.querySelectorAll('.date-pill').forEach(p => p.addEventListener('click', () => {
   document.querySelectorAll('.date-pill').forEach(d => d.classList.remove('active'));
