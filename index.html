@@ -1,278 +1,832 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuctionsPlus · Market Insights Hub</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuctionsPlus · Market Insights Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/* ============================================
+   AuctionsPlus Market Insights Hub — Homepage
+   Brand: Navy #002341 / Blue #1542A7 / Vivid #1971D8
+   ============================================ */
+:root {
+  --navy: #002341;
+  --blue: #1542A7;
+  --blue-vivid: #1971D8;
+  --sky: #E3F2FE;
+  --cool: #F7FAFC;
+  --white: #FFFFFF;
+  --border: #E2E8F0;
+  --border-light: #EDF2F7;
+  --text: #0F172A;
+  --muted: #64748B;
+  --green: #16a34a;
+  --green-bg: #dcfce7;
+  --red: #dc2626;
+  --red-bg: #fee2e2;
+  --amber: #d97706;
+  --amber-bg: #fef3c7;
+  --r: 10px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--cool); color: var(--text); font-size: 14px; line-height: 1.5; }
+.mono { font-family: 'DM Mono', monospace; }
+
+/* ── HEADER ── */
+.hdr {
+  background: var(--navy);
+  color: #fff;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 58px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 12px rgba(0,35,65,.25);
+}
+.hdr-left { display: flex; align-items: center; gap: 12px; }
+.hdr-brand { font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
+.hdr-sep { color: rgba(255,255,255,.25); }
+.hdr-sub { font-size: 13px; color: rgba(255,255,255,.55); font-weight: 400; }
+.hdr-right { display: flex; align-items: center; gap: 8px; }
+.hdr-btn {
+  padding: 5px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.8);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.hdr-btn:hover { background: rgba(255,255,255,.14); color: #fff; }
+.hdr-signin {
+  padding: 5px 16px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.35);
+  background: transparent;
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+  margin-left: 4px;
+}
+.hdr-signin:hover { background: #fff; color: var(--navy); }
+
+/* ── WEEK BANNER ── */
+.week-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 32px;
+  background: var(--sky);
+  border-bottom: 1px solid var(--border);
+}
+.week-badge {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  background: var(--blue-vivid);
+  color: #fff;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.week-text { font-size: 14px; font-weight: 600; color: var(--navy); }
+.week-text strong { font-weight: 800; }
+
+/* ── LAYOUT ── */
+.hub { max-width: 1360px; margin: 0 auto; padding: 20px 32px; }
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 14px;
+}
+.sh-title { font-size: 18px; font-weight: 800; letter-spacing: -.3px; }
+.sh-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.sh-right { display: flex; align-items: center; gap: 6px; }
+
+/* ── PILLS / TABS ── */
+.tab-row { display: flex; gap: 4px; }
+.tab-btn {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all .12s;
+}
+.tab-btn:hover { border-color: var(--blue); color: var(--blue); }
+.tab-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+/* ── KPI CARDS ── */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+.kpi {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow .15s, border-color .15s;
+}
+.kpi:hover { box-shadow: 0 4px 20px rgba(0,35,65,.08); border-color: var(--blue-vivid); }
+.kpi-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--blue-vivid); border-radius: var(--r) var(--r) 0 0; }
+.kpi-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+.kpi-value { font-size: 30px; font-weight: 800; letter-spacing: -1.2px; line-height: 1; }
+.kpi-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 8px;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+.kpi-delta.up { background: var(--green-bg); color: var(--green); }
+.kpi-delta.down { background: var(--red-bg); color: var(--red); }
+.kpi-delta.neutral { background: var(--border-light); color: var(--muted); }
+.kpi-spark { position: absolute; bottom: 10px; right: 14px; width: 80px; height: 28px; }
+
+/* ── DATE SELECTOR ── */
+.date-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+.date-pill {
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all .12s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.date-pill:hover { border-color: var(--blue); color: var(--blue); }
+.date-pill.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+/* ── CARDS ── */
+.card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  transition: box-shadow .15s, border-color .15s;
+}
+.card:hover { box-shadow: 0 4px 20px rgba(0,35,65,.07); border-color: var(--blue-vivid); }
+.card-hd {
+  padding: 12px 18px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-title { font-size: 14px; font-weight: 700; }
+.card-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.card-bd { padding: 14px 18px; }
+.open-btn {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--blue);
+  background: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--blue);
+  cursor: pointer;
+  transition: all .12s;
+}
+.open-btn:hover { background: var(--blue); color: #fff; }
+
+/* ── GRIDS ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+
+/* ── TABLE ── */
+.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tbl thead { background: var(--navy); color: #fff; }
+.tbl thead th { padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .3px; white-space: nowrap; }
+.tbl tbody tr { border-bottom: 1px solid var(--border-light); transition: background .1s; }
+.tbl tbody tr:hover { background: var(--cool); }
+.tbl td { padding: 8px 12px; }
+.num { font-family: 'DM Mono', monospace; font-size: 13px; }
+.pos { color: var(--green); font-weight: 700; font-family: 'DM Mono', monospace; }
+.neg { color: var(--red); font-weight: 700; font-family: 'DM Mono', monospace; }
+.flat { color: var(--muted); font-weight: 600; font-family: 'DM Mono', monospace; }
+.cat-s { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 600; background: #DBEAFE; color: #1D4ED8; }
+.cat-h { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 600; background: #FCE7F3; color: #BE185D; }
+.cat-b { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 600; background: #FEF3C7; color: #92400E; }
+
+/* ── SPARKLINE SVG ── */
+.spark { width: 80px; height: 28px; }
+.spark-sm { width: 48px; height: 18px; }
+
+/* ── CHART ── */
+.ch { position: relative; height: 220px; }
+
+/* ── MAP ── */
+#snm-map { height: 280px; border-radius: 0 0 var(--r) var(--r); }
+
+/* ── RAINFALL MAP ── */
+#rain-map { height: 260px; border-radius: 0 0 var(--r) var(--r); }
+.rain-stat { text-align: center; padding: 10px; background: var(--cool); border-radius: 8px; }
+.rain-val { font-size: 22px; font-weight: 800; letter-spacing: -.5px; }
+.rain-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; margin-top: 2px; }
+
+/* ── LOT TILES ── */
+.lot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+.lot-tile {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all .15s;
+}
+.lot-tile:hover { box-shadow: 0 4px 20px rgba(0,35,65,.1); border-color: var(--blue-vivid); transform: translateY(-1px); }
+.lot-img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  background: linear-gradient(135deg, #E2E8F0, #CBD5E1);
+  display: block;
+}
+.lot-body { padding: 10px 12px; }
+.lot-title { font-size: 12px; font-weight: 700; line-height: 1.3; margin-bottom: 4px; }
+.lot-loc { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+.lot-price { font-size: 18px; font-weight: 800; letter-spacing: -.5px; }
+.lot-ckg { font-size: 11px; color: var(--blue); font-weight: 600; }
+.lot-meta { display: flex; gap: 8px; margin-top: 6px; font-size: 10px; color: var(--muted); }
+.lot-meta span { display: flex; align-items: center; gap: 3px; }
+.lot-assess { display: block; margin-top: 6px; font-size: 11px; font-weight: 600; color: var(--blue); text-decoration: none; }
+.lot-assess:hover { text-decoration: underline; }
+
+/* ── FOOTER ── */
+.footer { text-align: center; padding: 20px 32px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); background: #fff; margin-top: 10px; }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: 8px 0 20px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .lot-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .hdr { flex-direction: column; height: auto; padding: 10px 16px; gap: 8px; }
+  .hub { padding: 16px; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .lot-grid { grid-template-columns: 1fr; }
+  .date-row { gap: 4px; }
+}
+
+/* ── ANIMATIONS ── */
+.fi { animation: fu .35s ease both; }
+@keyframes fu { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+</style>
 </head>
 <body>
- 
-    <!-- ========== NAVBAR ========== -->
-    <nav class="navbar">
-        <div class="nav-left">
-            <span class="nav-brand">AuctionsPlus</span>
-            <span class="nav-separator">·</span>
-            <span class="nav-subtitle">Market Insights Hub</span>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- HEADER                                 -->
+<!-- ═══════════════════════════════════════ -->
+<header class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-brand">AuctionsPlus</div>
+    <span class="hdr-sep">·</span>
+    <span class="hdr-sub">Market Insights Hub</span>
+  </div>
+  <div class="hdr-right">
+    <button class="hdr-btn">📍 Bathurst NSW 2795 ▾</button>
+    <button class="hdr-btn">📅 Fri 15 May 2026</button>
+    <button class="hdr-signin">Sign in</button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- THIS WEEK IN 1 LINE                    -->
+<!-- ═══════════════════════════════════════ -->
+<div class="week-banner">
+  <span class="week-badge">📰 This week in 1 line</span>
+  <span class="week-text">Steers <strong>strong across the eastern seaboard</strong> — heavy cattle up sharply, rain easing the dry streak in central NSW.</span>
+</div>
+
+<div class="hub">
+
+<!-- ═══════════════════════════════════════ -->
+<!-- INDICATORS                             -->
+<!-- ═══════════════════════════════════════ -->
+<section class="fi">
+  <div class="section-head">
+    <div>
+      <div class="sh-title">Indicators</div>
+      <div class="sh-sub">Live — updated every Friday close</div>
+    </div>
+    <div class="sh-right">
+      <div class="tab-row" id="ind-tabs">
+        <button class="tab-btn active" onclick="switchInd('cattle',this)">🐄 Cattle</button>
+        <button class="tab-btn" onclick="switchInd('sheep',this)">🐑 Sheep</button>
+        <button class="tab-btn" onclick="switchInd('region',this)">📍 My Region</button>
+        <button class="tab-btn" onclick="switchInd('other',this)">🌧️ Other</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Date selector -->
+  <div class="date-row">
+    <span style="font-size:11px;color:var(--muted);margin-right:4px;">◀</span>
+    <button class="date-pill active">15 May 2026</button>
+    <button class="date-pill">8 May 2026</button>
+    <button class="date-pill">1 May 2026</button>
+    <button class="date-pill">24 Apr 2026</button>
+    <button class="date-pill">17 Apr 2026</button>
+    <button class="date-pill">10 Apr 2026</button>
+    <button class="date-pill">3 Apr 2026</button>
+    <button class="date-pill">27 Mar 2026</button>
+    <span style="font-size:11px;color:var(--muted);margin-left:4px;">▶</span>
+  </div>
+
+  <!-- CATTLE INDICATORS -->
+  <div id="ind-cattle" class="ind-panel">
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-bar"></div>
+        <div class="kpi-label">Commercial Cattle Offerings</div>
+        <div class="kpi-value">12,422</div>
+        <span class="kpi-delta down">▼ 17%</span>
+        <svg class="kpi-spark spark" viewBox="0 0 80 28"><polyline points="0,5 12,8 24,10 36,6 48,12 60,18 72,22 80,20" fill="none" stroke="var(--red)" stroke-width="2" opacity=".5"/></svg>
+      </div>
+      <div class="kpi">
+        <div class="kpi-bar"></div>
+        <div class="kpi-label">Amount Over Reserve (VOR)</div>
+        <div class="kpi-value">$136</div>
+        <span class="kpi-delta up">▲ $15</span>
+        <svg class="kpi-spark spark" viewBox="0 0 80 28"><polyline points="0,22 12,20 24,18 36,15 48,12 60,10 72,8 80,6" fill="none" stroke="var(--green)" stroke-width="2" opacity=".5"/></svg>
+      </div>
+      <div class="kpi">
+        <div class="kpi-bar"></div>
+        <div class="kpi-label">Clearance Rate (%)</div>
+        <div class="kpi-value">83%</div>
+        <span class="kpi-delta down">▼ 7pp</span>
+        <svg class="kpi-spark spark" viewBox="0 0 80 28"><polyline points="0,6 12,8 24,7 36,10 48,14 60,18 72,16 80,20" fill="none" stroke="var(--red)" stroke-width="2" opacity=".5"/></svg>
+      </div>
+      <div class="kpi">
+        <div class="kpi-bar"></div>
+        <div class="kpi-label">AYCI c/kg LW</div>
+        <div class="kpi-value">494</div>
+        <span class="kpi-delta up">▲ 11c</span>
+        <svg class="kpi-spark spark" viewBox="0 0 80 28"><polyline points="0,24 12,22 24,19 36,16 48,13 60,10 72,7 80,5" fill="none" stroke="var(--green)" stroke-width="2" opacity=".5"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHEEP INDICATORS -->
+  <div id="ind-sheep" class="ind-panel" style="display:none">
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-bar" style="background:#10b981"></div>
+        <div class="kpi-label">Sheep & Lamb Offerings</div>
+        <div class="kpi-value">8,914</div>
+        <span class="kpi-delta up">▲ 12%</span>
+      </div>
+      <div class="kpi">
+        <div class="kpi-bar" style="background:#10b981"></div>
+        <div class="kpi-label">National Lamb Indicator</div>
+        <div class="kpi-value">812</div>
+        <span class="kpi-delta down">▼ 7pp</span>
+      </div>
+      <div class="kpi">
+        <div class="kpi-bar" style="background:#10b981"></div>
+        <div class="kpi-label">Mutton Avg c/kg</div>
+        <div class="kpi-value">420c</div>
+        <span class="kpi-delta neutral">— flat</span>
+      </div>
+      <div class="kpi">
+        <div class="kpi-bar" style="background:#10b981"></div>
+        <div class="kpi-label">Lamb Clearance Rate</div>
+        <div class="kpi-value">79%</div>
+        <span class="kpi-delta down">▼ 3pp</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY REGION INDICATORS -->
+  <div id="ind-region" class="ind-panel" style="display:none">
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-bar" style="background:var(--amber)"></div>
+        <div class="kpi-label">Lots within 50km · Bathurst</div>
+        <div class="kpi-value">87</div>
+        <span class="kpi-delta up">▲ 14%</span>
+      </div>
+      <div class="kpi">
+        <div class="kpi-bar" style="background:var(--amber)"></div>
+        <div class="kpi-label">Avg $/head · Bathurst 50km</div>
+        <div class="kpi-value">$1,942</div>
+        <span class="kpi-delta up">▲ $86</span>
+      </div>
+      <div class="kpi">
+        <div class="kpi-bar" style="background:var(--amber)"></div>
+        <div class="kpi-label">Avg c/kg LW · Bathurst 50km</div>
+        <div class="kpi-value">512c</div>
+        <span class="kpi-delta up">▲ 18c</span>
+      </div>
+      <div class="kpi">
+        <div class="kpi-bar" style="background:var(--amber)"></div>
+        <div class="kpi-label">Local Clearance Rate</div>
+        <div class="kpi-value">86%</div>
+        <span class="kpi-delta up">▲ 4pp</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- OTHER INDICATORS (Rainfall etc) -->
+  <div id="ind-other" class="ind-panel" style="display:none">
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-bar" style="background:#0ea5e9"></div>
+        <div class="kpi-label">Rainfall FYTD · Bathurst</div>
+        <div class="kpi-value">412mm</div>
+        <span class="kpi-delta up">▲ 8% vs avg</span>
+      </div>
+      <div class="kpi">
+        <div class="kpi-bar" style="background:#0ea5e9"></div>
+        <div class="kpi-label">Rainfall CYTD · Bathurst</div>
+        <div class="kpi-value">238mm</div>
+        <span class="kpi-delta up">▲ 12mm</span>
+      </div>
+      <div class="kpi">
+        <div class="kpi-bar" style="background:#0ea5e9"></div>
+        <div class="kpi-label">Previous Year to Date</div>
+        <div class="kpi-value">226mm</div>
+        <span class="kpi-delta neutral">baseline</span>
+      </div>
+      <div class="kpi">
+        <div class="kpi-bar" style="background:#0ea5e9"></div>
+        <div class="kpi-label">YTD Decile · Bathurst</div>
+        <div class="kpi-value">7.2</div>
+        <span class="kpi-delta up">▲ above avg</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- TOOLS                                  -->
+<!-- ═══════════════════════════════════════ -->
+<section class="fi" style="animation-delay:.05s">
+  <div class="section-head">
+    <div>
+      <div class="sh-title">Tools</div>
+      <div class="sh-sub">Click a card to drill in. Tiles show live previews.</div>
+    </div>
+    <button class="open-btn" style="padding:5px 14px;font-size:12px;">See all tools →</button>
+  </div>
+
+  <div class="grid-2">
+    <!-- CATTLE COMMENTS -->
+    <div class="card" style="cursor:pointer">
+      <div class="card-hd">
+        <div>
+          <div class="card-title">Cattle Comments</div>
+          <div class="card-sub">Weekly market commentary</div>
         </div>
-        <div class="nav-right">
-            <button class="nav-btn location-btn">
-                <span class="btn-icon">📍</span> Bathurst NSW 2795 ▾
-            </button>
-            <button class="nav-btn date-btn">
-                <span class="btn-icon">📅</span> Fri 15 May 2026
-            </button>
-            <a href="#" class="sign-in-link">Sign in</a>
+        <button class="open-btn">Open →</button>
+      </div>
+      <div class="card-bd" style="padding-bottom:6px">
+        <div class="tab-row" style="margin-bottom:10px">
+          <button class="tab-btn active" style="padding:4px 10px;font-size:11px" onclick="switchCattle('steers',this)">Steers</button>
+          <button class="tab-btn" style="padding:4px 10px;font-size:11px" onclick="switchCattle('heifers',this)">Heifers</button>
+          <button class="tab-btn" style="padding:4px 10px;font-size:11px" onclick="switchCattle('breeding',this)">Breeding</button>
         </div>
-    </nav>
- 
-    <!-- ========== THIS WEEK BANNER ========== -->
-    <section class="week-banner">
-        <span class="banner-badge">📰 This week in 1 line</span>
-        <p class="banner-text">
-            Steers <strong>strong across the eastern seaboard</strong> — heavy cattle up sharply, rain easing the dry streak in central NSW.
-        </p>
-    </section>
- 
-    <!-- ========== INDICATORS ========== -->
-    <section class="section indicators-section">
-        <div class="section-header">
-            <h2 class="section-title">Indicators</h2>
-            <span class="section-meta">Live — updated every Friday close</span>
+        <div id="cattle-steers">
+          <table class="tbl">
+            <thead><tr><th>Category</th><th>Avg c/kg</th><th>Range</th><th>Δ</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Steers 0–200kg</td><td class="num">564c</td><td class="num">440–635</td><td class="pos">+38c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,16 8,13 16,11 24,9 32,6 40,4 48,2" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
+              <tr><td>Steers 200–280kg</td><td class="num">550c</td><td class="num">447–628</td><td class="pos">+28c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,15 8,13 16,11 24,9 32,7 40,5 48,3" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
+              <tr><td>Steers 280–330kg</td><td class="num">528c</td><td class="num">387–577</td><td class="pos">+21c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,14 8,12 16,11 24,10 32,8 40,6 48,5" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
+              <tr><td>Steers 330–400kg</td><td class="num">530c</td><td class="num">468–567</td><td class="pos">+45c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,16 8,14 16,11 24,8 32,5 40,3 48,1" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
+            </tbody>
+          </table>
         </div>
-        <div class="indicators-grid">
-            <div class="indicator-card">
-                <span class="indicator-label">AYCI · CATTLE ¢/KG LW</span>
-                <span class="indicator-value">494</span>
-                <div class="indicator-footer">
-                    <span class="indicator-change up">▲ 23c vs last wk</span>
-                    <svg class="sparkline" viewBox="0 0 80 30" preserveAspectRatio="none">
-                        <polyline points="0,25 12,22 24,20 36,23 48,18 60,15 72,10 80,8" fill="none" stroke="#2d6a4f" stroke-width="2"/>
-                    </svg>
-                </div>
-            </div>
-            <div class="indicator-card">
-                <span class="indicator-label">NATIONAL LAMB INDICATOR</span>
-                <span class="indicator-value">812</span>
-                <div class="indicator-footer">
-                    <span class="indicator-change down">▼ 7pp vs last wk</span>
-                    <svg class="sparkline" viewBox="0 0 80 30" preserveAspectRatio="none">
-                        <polyline points="0,8 12,10 24,12 36,15 48,18 60,22 72,24 80,26" fill="none" stroke="#c1121f" stroke-width="2"/>
-                    </svg>
-                </div>
-            </div>
-            <div class="indicator-card">
-                <span class="indicator-label">CLEARANCE RATE</span>
-                <span class="indicator-value">83%</span>
-                <div class="indicator-footer">
-                    <span class="indicator-change up">▲ 2pp vs last wk</span>
-                    <svg class="sparkline" viewBox="0 0 80 30" preserveAspectRatio="none">
-                        <polyline points="0,20 12,18 24,22 36,16 48,14 60,12 72,10 80,9" fill="none" stroke="#2d6a4f" stroke-width="2"/>
-                    </svg>
-                </div>
-            </div>
-            <div class="indicator-card">
-                <span class="indicator-label">RAINFALL · YTD DECILE</span>
-                <span class="indicator-value">6.2</span>
-                <div class="indicator-footer">
-                    <span class="indicator-change up">▲ 0.4 vs avg</span>
-                    <svg class="sparkline" viewBox="0 0 80 30" preserveAspectRatio="none">
-                        <polyline points="0,22 12,20 24,18 36,20 48,16 60,14 72,12 80,11" fill="none" stroke="#2d6a4f" stroke-width="2"/>
-                    </svg>
-                </div>
-            </div>
-            <div class="indicator-card">
-                <span class="indicator-label">SOLD NEAR ME · LOTS</span>
-                <span class="indicator-value">549</span>
-                <div class="indicator-footer">
-                    <span class="indicator-change up">▲ 8% last 13 wks</span>
-                    <svg class="sparkline" viewBox="0 0 80 30" preserveAspectRatio="none">
-                        <polyline points="0,24 12,22 24,19 36,21 48,17 60,13 72,10 80,7" fill="none" stroke="#2d6a4f" stroke-width="2"/>
-                    </svg>
-                </div>
-            </div>
+        <div id="cattle-heifers" style="display:none">
+          <table class="tbl">
+            <thead><tr><th>Category</th><th>Avg c/kg</th><th>Range</th><th>Δ</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Heifers 0–200kg</td><td class="num">498c</td><td class="num">380–580</td><td class="pos">+22c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,14 8,12 16,10 24,9 32,7 40,5 48,4" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
+              <tr><td>Heifers 200–280kg</td><td class="num">472c</td><td class="num">365–545</td><td class="pos">+15c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,13 8,12 16,10 24,9 32,8 40,6 48,5" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
+              <tr><td>Heifers 280–330kg</td><td class="num">458c</td><td class="num">340–520</td><td class="neg">-8c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,8 8,9 16,10 24,11 32,12 40,13 48,14" fill="none" stroke="var(--red)" stroke-width="1.5"/></svg></td></tr>
+              <tr><td>Heifers 330–400kg</td><td class="num">445c</td><td class="num">320–510</td><td class="pos">+12c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,14 8,12 16,11 24,10 32,8 40,7 48,6" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
+            </tbody>
+          </table>
         </div>
-    </section>
- 
-    <!-- ========== TOOLS ========== -->
-    <section class="section tools-section">
-        <div class="section-header">
+        <div id="cattle-breeding" style="display:none">
+          <table class="tbl">
+            <thead><tr><th>Category</th><th>Avg $/hd</th><th>Range</th><th>Δ</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>PTIC Heifers</td><td class="num">$2,340</td><td class="num">$1,800–2,900</td><td class="pos">+$120</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,14 8,12 16,10 24,8 32,6 40,5 48,4" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
+              <tr><td>Cows & Calves</td><td class="num">$2,850</td><td class="num">$2,100–3,600</td><td class="pos">+$200</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,15 8,13 16,10 24,8 32,5 40,3 48,2" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
+              <tr><td>Joined Cows</td><td class="num">$1,980</td><td class="num">$1,400–2,500</td><td class="neg">-$65</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,7 8,8 16,10 24,11 32,12 40,13 48,14" fill="none" stroke="var(--red)" stroke-width="1.5"/></svg></td></tr>
+              <tr><td>Station Mated</td><td class="num">$1,740</td><td class="num">$1,200–2,200</td><td class="flat">$0</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,9 8,9 16,10 24,9 32,9 40,10 48,9" fill="none" stroke="var(--muted)" stroke-width="1.5"/></svg></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHEEP & LAMB COMMENTS -->
+    <div class="card" style="cursor:pointer">
+      <div class="card-hd">
+        <div>
+          <div class="card-title">Sheep & Lamb Comments</div>
+          <div class="card-sub">Weekly market commentary</div>
+        </div>
+        <button class="open-btn">Open →</button>
+      </div>
+      <div class="card-bd" style="padding-bottom:6px">
+        <div class="tab-row" style="margin-bottom:10px">
+          <button class="tab-btn active" style="padding:4px 10px;font-size:11px" onclick="switchSheep('trade',this)">Trade Lambs</button>
+          <button class="tab-btn" style="padding:4px 10px;font-size:11px" onclick="switchSheep('heavy',this)">Heavy Lambs</button>
+          <button class="tab-btn" style="padding:4px 10px;font-size:11px" onclick="switchSheep('mutton',this)">Mutton</button>
+        </div>
+        <div id="sheep-trade">
+          <table class="tbl">
+            <thead><tr><th>Category</th><th>Avg c/kg</th><th>Range</th><th>Δ</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Trade Lambs 20–24kg</td><td class="num">798c</td><td class="num">720–880</td><td class="pos">+15c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,14 8,12 16,10 24,8 32,7 40,5 48,4" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
+              <tr><td>Trade Lambs 18–20kg</td><td class="num">762c</td><td class="num">680–840</td><td class="pos">+20c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,15 8,13 16,11 24,9 32,6 40,4 48,3" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
+              <tr><td>Light Lambs &lt;18kg</td><td class="num">720c</td><td class="num">640–800</td><td class="neg">-12c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,6 8,7 16,9 24,10 32,12 40,13 48,14" fill="none" stroke="var(--red)" stroke-width="1.5"/></svg></td></tr>
+              <tr><td>Restocker Lambs</td><td class="num">680c</td><td class="num">600–740</td><td class="pos">+12c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,13 8,12 16,10 24,9 32,7 40,6 48,5" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="sheep-heavy" style="display:none">
+          <table class="tbl">
+            <thead><tr><th>Category</th><th>Avg c/kg</th><th>Range</th><th>Δ</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Heavy Lambs 24–26kg</td><td class="num">845c</td><td class="num">780–910</td><td class="pos">+22c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,14 8,11 16,9 24,7 32,5 40,3 48,2" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
+              <tr><td>Heavy Lambs 26kg+</td><td class="num">870c</td><td class="num">810–940</td><td class="pos">+18c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,13 8,11 16,9 24,8 32,6 40,4 48,3" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="sheep-mutton" style="display:none">
+          <table class="tbl">
+            <thead><tr><th>Category</th><th>Avg c/kg</th><th>Range</th><th>Δ</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Mutton</td><td class="num">420c</td><td class="num">350–490</td><td class="flat">8c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,9 8,9 16,10 24,9 32,10 40,9 48,10" fill="none" stroke="var(--muted)" stroke-width="1.5"/></svg></td></tr>
+              <tr><td>Wethers</td><td class="num">395c</td><td class="num">310–460</td><td class="neg">-15c</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,5 8,7 16,9 24,11 32,12 40,14 48,15" fill="none" stroke="var(--red)" stroke-width="1.5"/></svg></td></tr>
+              <tr><td>Ewes</td><td class="num">$185</td><td class="num">$120–260</td><td class="pos">+$12</td><td><svg class="spark-sm" viewBox="0 0 48 18"><polyline points="0,13 8,12 16,10 24,9 32,7 40,6 48,5" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RAINFALL & SOLD NEAR ME -->
+  <div class="grid-2">
+    <!-- RAINFALL TRACKER -->
+    <div class="card">
+      <div class="card-hd">
+        <div>
+          <div class="card-title">Rainfall Tracker</div>
+          <div class="card-sub">YTD decile · Bathurst region heatmap</div>
+        </div>
+        <button class="open-btn">Open →</button>
+      </div>
+      <div class="card-bd">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div id="rain-map" style="border-radius:8px;min-height:220px"></div>
+          <div style="display:flex;flex-direction:column;justify-content:space-between">
             <div>
-                <h2 class="section-title">Tools</h2>
-                <span class="section-meta">Click a card to drill in. Tiles show live previews.</span>
+              <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Your District — Bathurst</div>
+              <div style="font-size:38px;font-weight:900;line-height:1;letter-spacing:-1.5px;color:var(--navy)">78<sup style="font-size:14px;font-weight:600">th</sup></div>
+              <div style="font-size:13px;color:var(--muted);margin-top:2px">percentile</div>
+              <div style="margin-top:10px"><span class="kpi-delta up" style="font-size:12px">▲ 32mm last 7 days</span></div>
+              <div style="font-size:12px;color:var(--muted);margin-top:6px">Dry streak broken on day 41.</div>
             </div>
-            <a href="#" class="see-all-link">See all tools →</a>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+              <div class="rain-stat"><div class="rain-val">412mm</div><div class="rain-lbl">FYTD</div></div>
+              <div class="rain-stat"><div class="rain-val">238mm</div><div class="rain-lbl">CYTD</div></div>
+              <div class="rain-stat"><div class="rain-val">226mm</div><div class="rain-lbl">Prev YTD</div></div>
+              <div class="rain-stat"><div class="rain-val">7.2</div><div class="rain-lbl">Decile</div></div>
+            </div>
+          </div>
         </div>
- 
-        <div class="tools-grid">
- 
-            <!-- Cattle Comments -->
-            <div class="tool-card" onclick="window.location.href='pages/cattle-comments.html'">
-                <div class="tool-card-header">
-                    <h3 class="tool-card-title">Cattle Comments</h3>
-                    <button class="open-btn">Open →</button>
-                </div>
-                <p class="tool-card-subtitle">Weekly market commentary · Steers · Heifers · Breeders</p>
-                <table class="preview-table">
-                    <thead>
-                        <tr>
-                            <th>CATEGORY</th>
-                            <th>AVG C/KG</th>
-                            <th>RANGE</th>
-                            <th>Δ</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Steers 0–200kg</td>
-                            <td class="mono">564c</td>
-                            <td class="mono">440–635</td>
-                            <td class="change-up">+38c</td>
-                            <td><svg class="mini-spark" viewBox="0 0 40 16"><polyline points="0,14 8,11 16,9 24,7 32,5 40,3" fill="none" stroke="#2d6a4f" stroke-width="1.5"/></svg></td>
-                        </tr>
-                        <tr>
-                            <td>Steers 200–280kg</td>
-                            <td class="mono">550c</td>
-                            <td class="mono">447–628</td>
-                            <td class="change-up">+28c</td>
-                            <td><svg class="mini-spark" viewBox="0 0 40 16"><polyline points="0,13 8,11 16,10 24,8 32,6 40,4" fill="none" stroke="#2d6a4f" stroke-width="1.5"/></svg></td>
-                        </tr>
-                        <tr>
-                            <td>Steers 280–330kg</td>
-                            <td class="mono">528c</td>
-                            <td class="mono">387–577</td>
-                            <td class="change-up">+21c</td>
-                            <td><svg class="mini-spark" viewBox="0 0 40 16"><polyline points="0,12 8,10 16,9 24,8 32,6 40,5" fill="none" stroke="#2d6a4f" stroke-width="1.5"/></svg></td>
-                        </tr>
-                        <tr>
-                            <td>Steers 330–400kg</td>
-                            <td class="mono">530c</td>
-                            <td class="mono">468–567</td>
-                            <td class="change-up">+45c</td>
-                            <td><svg class="mini-spark" viewBox="0 0 40 16"><polyline points="0,14 8,12 16,10 24,7 32,4 40,2" fill="none" stroke="#2d6a4f" stroke-width="1.5"/></svg></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
- 
-            <!-- Sheep & Lamb Comments -->
-            <div class="tool-card" onclick="window.location.href='pages/sheep-comments.html'">
-                <div class="tool-card-header">
-                    <h3 class="tool-card-title">Sheep & Lamb Comments</h3>
-                    <button class="open-btn">Open →</button>
-                </div>
-                <p class="tool-card-subtitle">Trade lambs · Heavy lambs · Mutton · Restocker</p>
-                <table class="preview-table">
-                    <thead>
-                        <tr>
-                            <th>CATEGORY</th>
-                            <th>AVG C/KG</th>
-                            <th>RANGE</th>
-                            <th>Δ</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Trade Lambs 20–24kg</td>
-                            <td class="mono">798c</td>
-                            <td class="mono">720–880</td>
-                            <td class="change-up">+15c</td>
-                            <td><svg class="mini-spark" viewBox="0 0 40 16"><polyline points="0,13 8,11 16,10 24,8 32,6 40,5" fill="none" stroke="#2d6a4f" stroke-width="1.5"/></svg></td>
-                        </tr>
-                        <tr>
-                            <td>Heavy Lambs 24kg+</td>
-                            <td class="mono">845c</td>
-                            <td class="mono">780–910</td>
-                            <td class="change-up">+22c</td>
-                            <td><svg class="mini-spark" viewBox="0 0 40 16"><polyline points="0,14 8,11 16,9 24,7 32,5 40,3" fill="none" stroke="#2d6a4f" stroke-width="1.5"/></svg></td>
-                        </tr>
-                        <tr>
-                            <td>Mutton</td>
-                            <td class="mono">420c</td>
-                            <td class="mono">350–490</td>
-                            <td class="change-neutral">8c</td>
-                            <td><svg class="mini-spark" viewBox="0 0 40 16"><polyline points="0,8 8,9 16,7 24,8 32,9 40,8" fill="none" stroke="#c1121f" stroke-width="1.5"/></svg></td>
-                        </tr>
-                        <tr>
-                            <td>Restocker Lambs</td>
-                            <td class="mono">680c</td>
-                            <td class="mono">600–740</td>
-                            <td class="change-up">+12c</td>
-                            <td><svg class="mini-spark" viewBox="0 0 40 16"><polyline points="0,12 8,10 16,9 24,8 32,6 40,5" fill="none" stroke="#2d6a4f" stroke-width="1.5"/></svg></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
- 
-            <!-- Rainfall Tracker -->
-            <div class="tool-card" onclick="window.location.href='pages/rainfall.html'">
-                <div class="tool-card-header">
-                    <h3 class="tool-card-title">Rainfall Tracker</h3>
-                    <button class="open-btn">Open →</button>
-                </div>
-                <p class="tool-card-subtitle">YTD decile · By month · Dry streak · Heatmap &amp; pins</p>
-                <div class="preview-rainfall">
-                    <div class="rainfall-map-placeholder">
-                        <div class="map-dot" style="top:30%;left:60%;background:#2d6a4f;"></div>
-                        <div class="map-dot" style="top:45%;left:45%;background:#52b788;"></div>
-                        <div class="map-dot" style="top:55%;left:70%;background:#95d5b2;"></div>
-                        <div class="map-dot" style="top:35%;left:50%;background:#40916c;"></div>
-                        <div class="map-dot" style="top:60%;left:55%;background:#b7e4c7;"></div>
-                        <span class="map-label">YTD decile · heatmap</span>
-                    </div>
-                    <div class="rainfall-stats">
-                        <div class="rainfall-stat-block">
-                            <span class="stat-label">YOUR DISTRICT</span>
-                            <span class="stat-big">78<sup>th</sup> decile</span>
-                            <span class="indicator-change up">▲ 32mm last 7 days</span>
-                            <span class="stat-note">Dry streak broken on day 41.</span>
-                        </div>
-                        <button class="open-map-btn">Open map →</button>
-                    </div>
-                </div>
-            </div>
- 
-            <!-- Sold Near Me -->
-            <div class="tool-card" onclick="window.location.href='pages/sold-near-me.html'">
-                <div class="tool-card-header">
-                    <h3 class="tool-card-title">Sold Near Me</h3>
-                    <button class="open-btn">Open →</button>
-                </div>
-                <p class="tool-card-subtitle">What's selling within X km · who's buying · where it's going</p>
-                <div class="preview-sold">
-                    <div class="sold-stats">
-                        <span class="sold-period">LAST 13 WKS · 500KM</span>
-                        <table class="sold-table">
-                            <tr><td>Lots</td><td class="mono">549</td></tr>
-                            <tr><td>Head</td><td class="mono">21,942</td></tr>
-                            <tr><td>Avg $/hd</td><td class="mono">$1,837</td></tr>
-                            <tr><td>Avg buyer dist</td><td class="mono">249 km</td></tr>
-                        </table>
-                    </div>
-                    <div class="sold-map-placeholder">
-                        <div class="flow-line" style="top:30%;left:20%;width:50%;transform:rotate(-15deg);"></div>
-                        <div class="flow-line" style="top:50%;left:25%;width:40%;transform:rotate(10deg);"></div>
-                        <div class="flow-line" style="top:40%;left:30%;width:35%;transform:rotate(-5deg);"></div>
-                        <div class="map-dot pin" style="top:40%;left:50%;"></div>
-                        <div class="map-dot pin" style="top:55%;left:60%;"></div>
-                        <div class="map-dot pin" style="top:30%;left:65%;"></div>
-                        <span class="map-label">pins · flow lines</span>
-                    </div>
-                </div>
-            </div>
- 
+      </div>
+    </div>
+
+    <!-- SOLD NEAR ME -->
+    <div class="card">
+      <div class="card-hd">
+        <div>
+          <div class="card-title">Sold Near Me</div>
+          <div class="card-sub">What's selling within 500km · Bathurst</div>
         </div>
-    </section>
- 
-    <!-- ========== FOOTER ========== -->
-    <footer class="footer">
-        <p>© 2026 AuctionsPlus — Prototype Demo</p>
-    </footer>
- 
+        <button class="open-btn">Open →</button>
+      </div>
+      <div class="card-bd">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div>
+            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px">Last 13 wks · 500km</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light)"><span style="font-size:13px;color:var(--muted)">Lots</span><span class="num" style="font-weight:700">549</span></div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light)"><span style="font-size:13px;color:var(--muted)">Head</span><span class="num" style="font-weight:700">21,942</span></div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light)"><span style="font-size:13px;color:var(--muted)">Avg $/hd</span><span class="num" style="font-weight:700">$1,837</span></div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light)"><span style="font-size:13px;color:var(--muted)">Avg c/kg LW</span><span class="num" style="font-weight:700">512c</span></div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0"><span style="font-size:13px;color:var(--muted)">Avg buyer dist</span><span class="num" style="font-weight:700">249 km</span></div>
+            </div>
+          </div>
+          <div id="snm-map" style="border-radius:8px;min-height:220px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- LOTS SOLD NEAR ME (Tiles)              -->
+<!-- ═══════════════════════════════════════ -->
+<section class="fi" style="animation-delay:.1s">
+  <div class="section-head">
+    <div>
+      <div class="sh-title">Lots Sold Near Me</div>
+      <div class="sh-sub">Recent sales within 500km of Bathurst</div>
+    </div>
+    <button class="open-btn" style="padding:5px 14px;font-size:12px;">View all lots →</button>
+  </div>
+
+  <div class="lot-grid" id="lot-grid">
+    <!-- Populated by JS -->
+  </div>
+</section>
+
+</div><!-- end .hub -->
+
+<footer class="footer">© 2026 AuctionsPlus — Prototype Demo</footer>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- JAVASCRIPT                             -->
+<!-- ═══════════════════════════════════════ -->
+<script>
+// ── INDICATOR TAB SWITCHING ──
+function switchInd(panel, btn) {
+  document.querySelectorAll('.ind-panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('#ind-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('ind-' + panel).style.display = 'block';
+  btn.classList.add('active');
+}
+
+// ── CATTLE COMMENT TABS ──
+function switchCattle(sub, btn) {
+  ['steers','heifers','breeding'].forEach(s => {
+    document.getElementById('cattle-' + s).style.display = s === sub ? 'block' : 'none';
+  });
+  btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── SHEEP COMMENT TABS ──
+function switchSheep(sub, btn) {
+  ['trade','heavy','mutton'].forEach(s => {
+    document.getElementById('sheep-' + s).style.display = s === sub ? 'block' : 'none';
+  });
+  btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── DATE PILLS ──
+document.querySelectorAll('.date-pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('.date-pill').forEach(d => d.classList.remove('active'));
+    p.classList.add('active');
+  });
+});
+
+// ── SOLD NEAR ME MAP ──
+const snmMap = L.map('snm-map', { zoomControl: false, attributionControl: false }).setView([-33.42, 149.58], 7);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 18 }).addTo(snmMap);
+
+// Mock lot pins around Bathurst
+const snmLots = [
+  { lat: -33.42, lng: 149.58, price: '$2,110', breed: 'Angus Steers' },
+  { lat: -33.15, lng: 149.12, price: '$1,840', breed: 'Hereford Heifers' },
+  { lat: -33.85, lng: 150.05, price: '$1,720', breed: 'Angus Steers' },
+  { lat: -32.75, lng: 148.90, price: '$2,340', breed: 'Angus Cows & Calves' },
+  { lat: -34.10, lng: 149.75, price: '$1,645', breed: 'Speckle Park Heifers' },
+  { lat: -33.60, lng: 148.45, price: '$1,900', breed: 'Angus Steers' },
+  { lat: -32.95, lng: 150.20, price: '$1,430', breed: 'Charolais Heifers' },
+  { lat: -33.35, lng: 149.90, price: '$2,220', breed: 'Angus Steers' },
+  { lat: -34.30, lng: 148.80, price: '$1,870', breed: 'Shorthorn Steers' },
+  { lat: -33.05, lng: 149.35, price: '$2,920', breed: 'Angus Cows & Calves' },
+  { lat: -33.75, lng: 150.40, price: '$1,550', breed: 'Hereford Steers' },
+  { lat: -32.60, lng: 149.60, price: '$1,365', breed: 'Angus Weaners' },
+];
+const sexColors = { 'Steers': '#1542A7', 'Heifers': '#0ea5e9', 'Cows & Calves': '#dc2626', 'Weaners': '#8b5cf6' };
+snmLots.forEach(l => {
+  const sex = l.breed.split(' ').pop();
+  const combined = l.breed.includes('Cows') ? 'Cows & Calves' : sex;
+  L.circleMarker([l.lat, l.lng], {
+    radius: 6, fillColor: sexColors[combined] || '#1542A7', fillOpacity: .8,
+    color: '#fff', weight: 1.5
+  }).bindTooltip(`<strong>${l.price}</strong><br>${l.breed}`, { direction: 'top', offset: [0, -8] }).addTo(snmMap);
+});
+// Radius circle
+L.circle([-33.42, 149.58], { radius: 500000, color: 'var(--blue-vivid)', fillColor: '#1971D8', fillOpacity: .04, weight: 1, dashArray: '6 4' }).addTo(snmMap);
+
+// ── RAINFALL MAP ──
+const rainMap = L.map('rain-map', { zoomControl: false, attributionControl: false }).setView([-33.42, 149.58], 7);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 18 }).addTo(rainMap);
+// Heat-like coloured circles for rainfall zones
+const rainZones = [
+  { lat: -33.42, lng: 149.58, r: 35000, color: '#16a34a', label: 'Bathurst' },
+  { lat: -33.15, lng: 148.80, r: 30000, color: '#22c55e', label: 'Orange' },
+  { lat: -33.85, lng: 150.20, r: 28000, color: '#4ade80', label: 'Oberon' },
+  { lat: -32.60, lng: 149.10, r: 32000, color: '#86efac', label: 'Mudgee' },
+  { lat: -34.30, lng: 149.50, r: 26000, color: '#bbf7d0', label: 'Cowra' },
+  { lat: -33.00, lng: 150.10, r: 25000, color: '#059669', label: 'Lithgow' },
+  { lat: -33.50, lng: 148.20, r: 28000, color: '#a7f3d0', label: 'Molong' },
+];
+rainZones.forEach(z => {
+  L.circle([z.lat, z.lng], { radius: z.r, color: 'transparent', fillColor: z.color, fillOpacity: .35, weight: 0 }).addTo(rainMap);
+});
+L.marker([-33.42, 149.58], {
+  icon: L.divIcon({ html: '<div style="width:10px;height:10px;background:#002341;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>', iconSize: [10, 10], iconAnchor: [5, 5] })
+}).addTo(rainMap);
+
+// ── LOT TILES ──
+const LOTS = [
+  { title: 'Lot 223 — 16 Backgrounder Steers', loc: 'TOOMA, NSW', vendor: 'Kooyong Partners', price: '$2,110', unit: '$/Head', ckg: '528c Live · 980c Dressed', breed: 'Angus', bidders: 3, views: 298, saves: 47, img: 'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20251209102947205_45026e1c-8cbb-4773-aff7-a7e518461f66.jpg' },
+  { title: 'Lot 199 — 72 Feeder Steers', loc: 'GUNNEDAH, NSW', vendor: '4P Pastoral', price: '$2,395', unit: '$/Head', ckg: '518c Live · 980c Dressed', breed: 'Angus', bidders: 5, views: 414, saves: 23, img: 'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20260121211512388_ccadf91a-47e0-4775-817d-bff0da8404db.jpg' },
+  { title: 'Lot 200 — 78 Feeder Steers', loc: 'MUDGEE, NSW', vendor: 'Valley View', price: '$1,840', unit: '$/Head', ckg: '542c Live · 1010c Dressed', breed: 'Angus', bidders: 1, views: 103, saves: 48, img: 'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20251119231447539_73b413fc-28d7-430d-b994-e97cd8060015.jpg' },
+  { title: 'Lot 145 — 24 Weaner Heifers', loc: 'GLEN INNES, NSW', vendor: 'Doyle Family', price: '$870', unit: '$/Head', ckg: '396c Live', breed: 'Angus', bidders: 2, views: 174, saves: 26, img: 'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20260225193724459_940c1f4d-c9ac-4ab0-8151-186e03df74d8.jpg' },
+  { title: 'Lot 312 — 40 Cows & Calves', loc: 'BRAIDWOOD, NSW', vendor: 'Mt Douro Pastoral', price: '$3,575', unit: '$/Head', ckg: '—', breed: 'Angus', bidders: 3, views: 307, saves: 118, img: 'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20250923195250062_e0974b2a-edfa-4311-b0ae-26560e1a5971.jpg' },
+  { title: 'Lot 88 — 35 Yearling Steers', loc: 'MERRIWA, NSW', vendor: 'Doolan Partners', price: '$2,220', unit: '$/Head', ckg: '530c Live · 988c Dressed', breed: 'Angus', bidders: 5, views: 103, saves: 48, img: 'https://auctionsplusblob.blob.core.windows.net/apmediaprod/Photos/Image_20251119231447539_73b413fc-28d7-430d-b994-e97cd8060015.jpg' },
+];
+
+const lotGrid = document.getElementById('lot-grid');
+LOTS.forEach(l => {
+  lotGrid.innerHTML += `
+    <div class="lot-tile">
+      <img class="lot-img" src="${l.img}" alt="${l.title}" onerror="this.style.background='linear-gradient(135deg,#E2E8F0,#CBD5E1)';this.style.display='block'">
+      <div class="lot-body">
+        <div class="lot-title">${l.title}</div>
+        <div class="lot-loc">📍 ${l.loc} · 🧑‍🌾 ${l.vendor}</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <div>
+            <div class="lot-price">${l.price}<span style="font-size:11px;font-weight:500;color:var(--muted)">/${l.unit.split('/')[1] || 'Head'}</span></div>
+            <div class="lot-ckg">${l.ckg}</div>
+          </div>
+          <a href="#" class="lot-assess">View Assessment →</a>
+        </div>
+        <div class="lot-meta">
+          <span>👁 ${l.views}</span>
+          <span>💾 ${l.saves}</span>
+          <span>🙋 ${l.bidders} bidders</span>
+          <span>🐄 ${l.breed}</span>
+        </div>
+      </div>
+    </div>`;
+});
+
+// Fix map sizing after layout
+setTimeout(() => { snmMap.invalidateSize(); rainMap.invalidateSize(); }, 200);
+</script>
 </body>
 </html>
- 
